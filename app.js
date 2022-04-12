@@ -25,19 +25,27 @@ mjAPI.config({
 });
 mjAPI.start();
 
-var yourMath = '\\frac{xy^{-3}}{x^{4}y} = \\frac{1}{x^{3}y^{4}}';
+
+var datar = "soccer";
+// for (var i = 0; i < datar.length; i++) { //starts loop
+//     console.log("The Number Is: " + datar[i]); //What ever you want
+//   }; 
+app.get('/', (req, res) => {
+    var yourMath = '\\frac{xy^{-3}}{x^{4}y} = \\frac{1}{x^{3}y^{4}}';
 
 mjAPI.typeset({
   math: yourMath,
   format: "TeX", // or "inline-TeX", "MathML"
   mml:true,      // or svg:true, or html:true
 }, function (data) {
-  if (!data.errors) {console.log(data.mml)}
+  if (!data.errors) {
+      //pushing collected data to global array... datar
+      console.log(data.mml)
+      datar = data.mml;
+    }
 });
-
-app.get('/', (req, res) => {
     //landing page
-    res.status(200).render('Home.ejs')
+    res.status(200).render('Home.ejs', {text: datar});
 })
 app.get('/Home', (req, res) => {
     //Home page

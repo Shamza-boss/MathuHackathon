@@ -1,0 +1,54 @@
+
+  <%- include("./Partials/Header") %>
+  <title>Absolute Online &#8211; Home</title>
+  <!--Absolute SEO*-->
+  <meta name="description" content="Building unique websites that allow you to take your business online while utilizing the most up-to-date technology available on the market to help your company prosper.">
+  <meta name="keywords" content="Web design, Database development, API integrations, Websites, Website development, Google analytics, SEO, Search engine optimization">
+  <meta name="robots" content="index, follow" />
+<!--Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-214016625-1">
+</script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-214016625-1');
+</script>
+</head>
+
+<body>
+
+		 <!-- Title -->
+	<section class="colored-section-t" id="title">
+    
+     <!-- Nav Bar -->
+     <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/About">A.O</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active " href="/Home">Home</a><!-- need to configure home link -->
+            </li>
+            <li class="nav-item">
+              <a  class="nav-link" href="/Services" >Services</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+ 
+
+  <!-- About section -->
+  <section style="color:azure" class="colored-section">
+    
+    
+      <%- text %>
+      
+  </section>
+ 
+  <%- include("./Partials/footer") %>
