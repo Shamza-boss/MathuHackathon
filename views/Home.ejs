@@ -1,19 +1,8 @@
 
   <%- include("./Partials/Header") %>
-  <title>Absolute Online &#8211; Home</title>
-  <!--Absolute SEO*-->
-  <meta name="description" content="Building unique websites that allow you to take your business online while utilizing the most up-to-date technology available on the market to help your company prosper.">
-  <meta name="keywords" content="Web design, Database development, API integrations, Websites, Website development, Google analytics, SEO, Search engine optimization">
-  <meta name="robots" content="index, follow" />
+  <title>Optimize prime &#8211; Home</title>
 <!--Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-214016625-1">
-</script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'UA-214016625-1');
 </script>
 </head>
 
@@ -44,11 +33,35 @@
  
 
   <!-- About section -->
-  <section style="color:azure" class="colored-section">
-    
-    
-      <%- text %>
-      
+  <section class="white-section">
+    <div class="container-fluid">
+      <h3 class="subheading1Serv">Optimize Prime Searcher</h3>
+          <h1 class="big-headingServ1">What is your query?</h1>
+        <div class="row philCard DatabaseContent">
+          <div class="col-md-4 col-sm-12">
+            <form  method="POST"  autocomplete="off">
+             
+                <div class="mb-3">
+                  <!-- This i a input for tex -->
+                  <label for="itemNae" class="form-label">Input raw Tex</label>
+                  <input type="text" class="form-control" id="itemNae" name="RawTex" placeholder="Light">
+                </div>
+                <!-- This i a input for Mathml -->
+                <div class="mb-3 form-group">
+                  <label for="exampleFormControlTextarea3">Input raw Mathml</label>
+                  <textarea class="form-control" id="exampleFormControlTextarea3"  name="RawMathml" rows="7"></textarea>
+                </div>
+                <button type="submit" class="btn btn-warning" formaction="/RawTex">Search Tex</button>
+                <button type="submit" class="btn btn-primary" formaction="/RawMathml">Search MathML</button>
+              </form>
+          </div>
+          <!-- this is where we render the result from the backend -->
+          <div class="col-md-8 col-sm-12 mt-3 rounded">
+            <%- result %>
+          </div>
+          </div>
+        </div>
+      </div>
   </section>
  
   <%- include("./Partials/footer") %>
