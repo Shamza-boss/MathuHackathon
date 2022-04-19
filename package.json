@@ -30,8 +30,6 @@
     "fs": "^0.0.1-security",
     "mathjax": "^3.2.0",
     "mathjax-node": "^2.1.1",
-    "mathml-to-asciimath": "^1.4.0",
-    "mathml-to-latex": "^1.2.0",
-    "mathml2asciimath": "^0.0.5"
+    "mathml-to-latex": "^1.2.0"
   }
 }

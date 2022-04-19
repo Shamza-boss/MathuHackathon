@@ -13,32 +13,6 @@ app.use(express.urlencoded({ extended: true }));//initialises port
 app.use(express.json())
 
 
-// var convert = require('mathml-to-asciimath');
-
-// var mathml = `
-// <math xmlns="http://www.w3.org/1998/Math/MathML" display="block" alttext="\frac{4-b^2}{3b-6}">
-//   <mfrac>
-//     <mrow>
-//       <mn>4</mn>
-//       <mo>&#x2212;<!-- − --></mo>
-//       <msup>
-//         <mi>b</mi>
-//         <mn>2</mn>
-//       </msup>
-//     </mrow>
-//     <mrow>
-//       <mn>3</mn>
-//       <mi>b</mi>
-//       <mo>&#x2212;<!-- − --></mo>
-//       <mn>6</mn>
-//     </mrow>
-//   </mfrac>
-// </math>
-// `;
-// console.log(convert(mathml)); // => '1 + 2'
-
-// => A = [(x, y), (z, w)]
-
 //configuration setting for mathjax api
 mjAPI.config({
   MathJax: {
@@ -53,44 +27,13 @@ mjAPI.config({
 //initialises mathjax to listen
 mjAPI.start();
 
-// //sample input of raw tex
-// const rawTexCode = "'\\frac{xy^{-3}}{x^{4}y} = \\frac{1}{x^{3}y^{4}}';"
+//read data as an embedded array from written page
+const DataWarehouse = require('./public/DBJSONDATA/Written/StructureDB.js');
+
+//this solution is better than using a loop as we have access to all the data globaly as if it where an actual object
+console.log(DataWarehouse[0].Functions)
 
 
-
-//p1 x+y=2
-//p1 x+y= 1
-//p3 xay=6
-//px x3+y= 1
-//converts mathml to tex format so we can process
-//console.log(Mathml2latex.convert(mathml));
-
-//option 1 to read Json files
-// const file1 = require('./public/DBJSONDATA/course1/section_600961b039384c001eed5699/activity_600961b039384c001eed56b7.json')
-// console.log(file1)
-
-//option 2 to read Json files
-// var latexr = ""
-
-for (var i = 1; i<=28; i++) {
-  const fs = require('fs');
-  fs.readFile('./public/DBJSONDATA/Course1/activity_'+i+'.json', 'utf-8', (err, JsonString)=>{
-    if(err){
-      console.log(err)
-    }else{
-      //convert string to json
-      const data = JSON.parse(JsonString)
-        // latexr = data.problem[0].problem.en.latex
-        //console.log(data.childProblems[0].problem.en.latex)
-        for(let j=0; j<data.childProblems.length; j++){
-          //need to remove first 2 and last two to make it valid latex
-          console.log((data.childProblems[j].problem.en.latex).slice(2, -2))
-          //category problem
-          console.log("Category: "+data.problems[0].problem.en.latex)
-        }
-    }
-  })
-}
 
 //place holder for injection to frontend
 var datar = "Input data so we can search";
@@ -119,9 +62,6 @@ app.post('/RawTex',(req, res)=>{
     if (!data.errors) {
       //  console.log(data.mml)
       console.log(data.mml)
-      // mathml = data.mml
-      // var ascii = convert(mathml)
-      // console.log(ascii);
         //pushing collected data to global array... datar
         datar = data.mml;
       }
@@ -141,9 +81,6 @@ mjAPI.typeset({
 }, function (data) {
   if (!data.errors) {
       //console.log(data.mml)
-      mathml = data.mml
-      var ascii = convert(mathml)
-      console.log(data.mml);
       //pushing collected data to global array... datar
       datar = data.mml;
     }
