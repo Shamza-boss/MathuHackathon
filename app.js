@@ -12,6 +12,33 @@ app.use(express.static(__dirname + '/public'));//allows access to public folder 
 app.use(express.urlencoded({ extended: true }));//initialises port
 app.use(express.json())
 
+
+// var convert = require('mathml-to-asciimath');
+
+// var mathml = `
+// <math xmlns="http://www.w3.org/1998/Math/MathML" display="block" alttext="\frac{4-b^2}{3b-6}">
+//   <mfrac>
+//     <mrow>
+//       <mn>4</mn>
+//       <mo>&#x2212;<!-- − --></mo>
+//       <msup>
+//         <mi>b</mi>
+//         <mn>2</mn>
+//       </msup>
+//     </mrow>
+//     <mrow>
+//       <mn>3</mn>
+//       <mi>b</mi>
+//       <mo>&#x2212;<!-- − --></mo>
+//       <mn>6</mn>
+//     </mrow>
+//   </mfrac>
+// </math>
+// `;
+// console.log(convert(mathml)); // => '1 + 2'
+
+// => A = [(x, y), (z, w)]
+
 //configuration setting for mathjax api
 mjAPI.config({
   MathJax: {
@@ -29,27 +56,7 @@ mjAPI.start();
 // //sample input of raw tex
 // const rawTexCode = "'\\frac{xy^{-3}}{x^{4}y} = \\frac{1}{x^{3}y^{4}}';"
 
-// //sample input raw mathml code
-// const mathml = `
-//     <math>
-//         <mrow>
-//             <mi>A</mi>
-//             <mo>=</mo>
-//             <mfenced open = "[" close="]">
-//             <mtable>
-//                 <mtr>
-//                 <mtd><mi>x</mi></mtd>
-//                 <mtd><mi>y</mi></mtd>
-//                 </mtr>
-//                 <mtr>
-//                 <mtd><mi>z</mi></mtd>
-//                 <mtd><mi>w</mi></mtd>
-//                 </mtr>
-//             </mtable>
-//             </mfenced>
-//         </mrow>
-//     </math>
-//     `;
+
 
 //p1 x+y=2
 //p1 x+y= 1
@@ -64,17 +71,27 @@ mjAPI.start();
 
 //option 2 to read Json files
 // var latexr = ""
-// const fs = require('fs');
-// fs.readFile('./public/DBJSONDATA/course1/section_600961b039384c001eed5699/activity_600961b039384c001eed56b7.json', 'utf-8', (err, JsonString)=>{
-//   if(err){
-//     console.log(err)
-//   }else{
-//     //convert string to json
-//     const data = JSON.parse(JsonString)
-//     // latexr = data.childProblems[0].problem.en.latex
-//     console.log(data.childProblems[0].problem.en.latex)
-//   }
-// })
+
+for (var i = 1; i<=28; i++) {
+  const fs = require('fs');
+  fs.readFile('./public/DBJSONDATA/Course1/activity_'+i+'.json', 'utf-8', (err, JsonString)=>{
+    if(err){
+      console.log(err)
+    }else{
+      //convert string to json
+      const data = JSON.parse(JsonString)
+        // latexr = data.problem[0].problem.en.latex
+        //console.log(data.childProblems[0].problem.en.latex)
+        for(let j=0; j<data.childProblems.length; j++){
+          //need to remove first 2 and last two to make it valid latex
+          console.log((data.childProblems[j].problem.en.latex).slice(2, -2))
+          //category problem
+          console.log("Category: "+data.problems[0].problem.en.latex)
+        }
+    }
+  })
+}
+
 //place holder for injection to frontend
 var datar = "Input data so we can search";
 //sample input raw tex code
@@ -100,7 +117,11 @@ app.post('/RawTex',(req, res)=>{
     mml:true,      // or svg:true, or html:true
   }, function (data) {
     if (!data.errors) {
-        console.log(data.mml)//testing
+      //  console.log(data.mml)
+      console.log(data.mml)
+      // mathml = data.mml
+      // var ascii = convert(mathml)
+      // console.log(ascii);
         //pushing collected data to global array... datar
         datar = data.mml;
       }
@@ -119,7 +140,10 @@ mjAPI.typeset({
   mml:true,      // or svg:true, or html:true
 }, function (data) {
   if (!data.errors) {
-      console.log(data.mml)
+      //console.log(data.mml)
+      mathml = data.mml
+      var ascii = convert(mathml)
+      console.log(data.mml);
       //pushing collected data to global array... datar
       datar = data.mml;
     }
