@@ -56,12 +56,37 @@
               </form>
           </div>
           <!-- this is where we render the result from the backend -->
-          <div class="col-md-8 col-sm-12 mt-3 rounded">
-            <%- result %>
+          <div class="col-md-4 col-sm-12 mt-3 rounded">
+            <h3>Query</h3>
+            <%- query %>
+          </div>
+          <div class="col-md-4 col-sm-12 mt-3 rounded">
+            <h3>Result</h3>
+            <p> Confidence: <span style="color:greenyellow"><%= result[0].confidence %>%</span></p>
+            
+            <%- result[0].Func %>
+             Category: <%= result[0].Cat %>
           </div>
           </div>
+          <div class="row philCard DatabaseContent">
+            <!-- this is where we render the result from the backend -->
+            <%if(result.length > 1){%>
+            <% for (var i = 1; i<result.length; i++){%>
+            <div class="col-md-4 col-sm-12 mt-3 rounded">
+              <h3>Result number: <%=i%></h3>
+              Confidence: <%= result[i].confidence %> %
+              <%- result[i].Func %>
+               Category: <%= result[i].Cat %>
+            </div>
+            <%}%>
+            <%}else{%>
+            <div class="col-md-4 col-sm-12 mt-3 rounded">
+              <h3>Only one result was returned</h3>
+            </div>
+            <%}%>
+            </div>
         </div>
       </div>
   </section>
- 
+  
   <%- include("./Partials/footer") %>

@@ -1,6 +1,8 @@
 require("dotenv").config()
 var port = process.env.PORT || 1337;
 var express = require("express");
+//engine
+let wuzzy = require("wuzzy")
 //mathjax converter
 const Mathml2latex = require('mathml-to-latex');
 //mathjax api
@@ -35,25 +37,36 @@ console.log(DataWarehouse[0].Functions)
 
 
 
-//place holder for injection to frontend
-var datar = "Input data so we can search";
+
 //sample input raw tex code
 app.get('/', (req, res) => {
+  //place holder for injection to frontend
+var datar = "Input data so we can search";
+//array holding data
+var filter = [{confidence: 0, Func: `<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+<mfrac>
+<mrow>
+<mi>y</mi>
+<mo>−</mo>
+<mn>3</mn>
+</mrow>
+<mn>3</mn>
+</mfrac>
+</math>`, Cat: 'linear'}];
     //main route takes data and reads it
-    res.status(200).render('Home.ejs', {result: datar});
+    res.status(200).render('Home.ejs', {query: datar, result: filter});
 })
 app.get('/Home', (req, res) => {
     //Main route
     res.status(200).redirect('/')
 })
-//post method is an action that the frontend form listens for... this listener is listening for the Rawtex route
-app.post('/RawTex',(req, res)=>{
-   //gets data from textbox in frontend
-  var tex = req.body.RawTex;
-  //console.log(tex);
-  var yourMath = tex;
-
-
+app.post('/RawMathml',(req, res)=>{
+  //gets data from textbox in frontend
+  var tex = req.body.RawMathml;
+  const yourMath = Mathml2latex.convert(tex);
+  console.log(yourMath)
+var datar = "";
+  //query to be returned
   mjAPI.typeset({
     math: yourMath,
     format: "TeX", // or "inline-TeX", "MathML"
@@ -66,29 +79,93 @@ app.post('/RawTex',(req, res)=>{
         datar = data.mml;
       }
   });
-  res.redirect('/');
-})
-//post method is an action that the frontend form listens for... this listener is listening for the Rawtex route
-app.post('/RawMathml',(req, res)=>{
-  //gets data from textbox in frontend
-  var texM = req.body.RawMathml;
-  //converts MathML to tex before processing
-const yourMath = Mathml2latex.convert(texM);
-mjAPI.typeset({
-  math: yourMath,
-  format: "TeX", // or "inline-TeX", "MathML"
-  mml:true,      // or svg:true, or html:true
-}, function (data) {
-  if (!data.errors) {
-      //console.log(data.mml)
-      //pushing collected data to global array... datar
-      datar = data.mml;
+
+  var filter = [];
+  //funtion to retrieve from DBJSONDATA and compare
+  for(var i = 0; i < DataWarehouse.length; i++){
+    
+    // var answer = cos.similarity(input, DataWarehouse[i].Functions);
+     let answer = wuzzy.ngram(yourMath, DataWarehouse[i].Functions);
+
+    if(answer>0.4){
+        console.log(DataWarehouse[i].Functions)
+        console.log(DataWarehouse[i].Category)
+        mjAPI.typeset({
+          math: DataWarehouse[i].Functions,
+          format: "TeX", // or "inline-TeX", "MathML"
+          mml:true,      // or svg:true, or html:true
+        }, function (data) {
+          if (!data.errors) {
+            //  console.log(data.mml)
+            console.log(data.mml)
+              //pushing collected data to global array... datar
+              answer = Math.floor(answer*100)
+              console.log(answer)
+              filter.push({confidence: answer, Func: data.mml, Cat: DataWarehouse[i].Category});
+            }
+        });
+        
+        console.log(answer);
     }
-});
-  //redirects to main route;
-  res.redirect('/')
+    
+}
+filter.sort(function (a, b) { return a.confidence > b.confidence ? -1 : 1});
+res.status(200).render('Home.ejs', {query: datar, result: filter});
 })
 
+//post method is an action that the frontend form listens for... this listener is listening for the Rawtex route
+app.post('/RawTex',(req, res)=>{
+  //gets data from textbox in frontend
+  var tex = req.body.RawTex;
+  console.log(tex)
+
+  //query to be returned
+  mjAPI.typeset({
+    math: tex,
+    format: "TeX", // or "inline-TeX", "MathML"
+    mml:true,      // or svg:true, or html:true
+  }, function (data) {
+    if (!data.errors) {
+      //  console.log(data.mml)
+      console.log(data.mml)
+        //pushing collected data to global array... datar
+        datar = data.mml;
+      }
+  });
+
+ 
+  var filter = [];
+  //funtion to retrieve from DBJSONDATA and compare
+  for(var i = 0; i < DataWarehouse.length; i++){
+    
+    // var answer = cos.similarity(input, DataWarehouse[i].Functions);
+     let answer = wuzzy.ngram(tex, DataWarehouse[i].Functions);
+
+    if(answer>0.4){
+        console.log(DataWarehouse[i].Functions)
+        console.log(DataWarehouse[i].Category)
+        mjAPI.typeset({
+          math: DataWarehouse[i].Functions,
+          format: "TeX", // or "inline-TeX", "MathML"
+          mml:true,      // or svg:true, or html:true
+        }, function (data) {
+          if (!data.errors) {
+            //  console.log(data.mml)
+            console.log(data.mml)
+              //pushing collected data to global array... datar
+              answer = Math.floor(answer*100)
+              console.log(answer)
+              filter.push({confidence: answer, Func: data.mml, Cat: DataWarehouse[i].Category});
+            }
+        });
+        
+        console.log(answer);
+    }
+    
+}
+filter.sort(function (a, b) { return a.confidence > b.confidence ? -1 : 1});
+res.status(200).render('Home.ejs', {query: datar, result: filter});
+})
 //testroute to view sample json file
 app.get('/test', (req, res)=>{
 })
