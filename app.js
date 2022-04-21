@@ -87,7 +87,7 @@ var datar = "";
     // var answer = cos.similarity(input, DataWarehouse[i].Functions);
      let answer = wuzzy.ngram(yourMath, DataWarehouse[i].Functions);
 
-    if(answer>0.4){
+    if(answer>0.2){
         console.log(DataWarehouse[i].Functions)
         console.log(DataWarehouse[i].Category)
         mjAPI.typeset({
@@ -118,7 +118,7 @@ app.post('/RawTex',(req, res)=>{
   //gets data from textbox in frontend
   var tex = req.body.RawTex;
   console.log(tex)
-
+  var datar = "";
   //query to be returned
   mjAPI.typeset({
     math: tex,
@@ -142,8 +142,8 @@ app.post('/RawTex',(req, res)=>{
      let answer = wuzzy.ngram(tex, DataWarehouse[i].Functions);
 
     if(answer>0.4){
-        console.log(DataWarehouse[i].Functions)
-        console.log(DataWarehouse[i].Category)
+        // console.log(DataWarehouse[i].Functions)
+        // console.log(DataWarehouse[i].Category)
         mjAPI.typeset({
           math: DataWarehouse[i].Functions,
           format: "TeX", // or "inline-TeX", "MathML"
@@ -164,6 +164,7 @@ app.post('/RawTex',(req, res)=>{
     
 }
 filter.sort(function (a, b) { return a.confidence > b.confidence ? -1 : 1});
+//parses to frontened
 res.status(200).render('Home.ejs', {query: datar, result: filter});
 })
 //testroute to view sample json file
