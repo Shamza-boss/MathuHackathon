@@ -1,0 +1,79 @@
+
+  <%- include("./Partials/Header") %>
+  <title>Optimize prime &#8211; Home</title>
+<!--Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-214016625-1">
+</script>
+</head>
+
+<body>
+
+		 <!-- Title -->
+	<section class="colored-section-t" id="title">
+    
+     <!-- Nav Bar -->
+     <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active " href="/Mathml">Input Mathml</a><!-- need to configure home link -->
+            </li>
+            <li class="nav-item">
+              <a  class="nav-link" href="/RawTex" >Input Latex</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+    </nav>
+    
+
+  <!-- About section -->
+  <section class="white-section">
+    <div class="container-fluid">
+      <h3 class="subheading1Serv">Optimize Prime Searcher</h3>
+          <h1 class="big-headingServ1">What is your query?</h1>
+        <div class="row philCard DatabaseContent">
+          <form  method="POST"  autocomplete="off">
+            <div class="input-group mb-12">
+              <input type="text" class="form-control" name="RawMathml" placeholder="Please input mathml" aria-describedby="button-addon2">
+              <button class="btn btn-primary" type="submit" id="button-addon1" formaction="/RawMathml">Search</button>
+            </div>
+          </form>
+          <!-- this is where we render the result from the backend -->
+          <%if(result.length > 1){%>
+            <div class="col-md-6 col-sm-12 mt-3 rounded">
+              <h3 class="subheading1Serv">Query</h3>
+              <h3><%- query %></h3>
+            </div>
+            <div class="col-md-6 col-sm-12 mt-3 rounded">
+              <h3 class="subheading1Serv">Top result</h3>
+              <h3> Confidence: <span style="color:greenyellow"><%= result[0].confidence %>%</span></h3>
+              <%- result[0].Func %>
+               Category: <%= result[0].Cat %>
+            </div>
+            <!-- this is where we render the result from the backend -->
+            <%if(result.length > 1){%>
+              <% for (var i = 1; i<result.length; i++){%>
+              <div class="col-md-12 col-sm-12 mt-3 rounded">
+                <h3 class="subheading1Serv">Result number: <%=i+1%></h3>
+                Confidence: <%= result[i].confidence %> %
+                <h3><%- result[i].Func %></h3>
+                 <p>Category: <%= result[i].Cat %></p>
+              </div>
+              <%}%>
+              <%}else{%>
+              <div class="col-md-12 col-sm-12 mt-3 rounded">
+                <p>Only one result was returned</p>
+              </div>
+              <%}%>
+            <%}%>
+          
+          </div>
+        </div>
+      </div>
+  </section>
