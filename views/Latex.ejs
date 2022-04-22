@@ -46,13 +46,13 @@
           </form>
           <!-- this is where we render the result from the backend -->
           <%if(result.length > 1){%>
-            <div class="col-md-12 col-sm-12 mt-3 rounded">
-              <h3>Query</h3>
-              <%- query %>
+            <div class="col-md-6 col-sm-12 mt-3 rounded">
+              <h3 class="subheading1Serv">Query</h3>
+              <h3><%- query %></h3>
             </div>
-            <div class="col-md-12 col-sm-12 mt-3 rounded">
-              <h3>Top result</h3>
-              <p> Confidence: <span style="color:greenyellow"><%= result[0].confidence %>%</span></p>
+            <div class="col-md-6 col-sm-12 mt-3 rounded">
+              <h3 class="subheading1Serv">Top result</h3>
+              <h3> Confidence: <span style="color:greenyellow"><%= result[0].confidence %>%</span></h3>
               <%- result[0].Func %>
                Category: <%= result[0].Cat %>
             </div>
@@ -60,15 +60,15 @@
             <%if(result.length > 1){%>
               <% for (var i = 1; i<result.length; i++){%>
               <div class="col-md-12 col-sm-12 mt-3 rounded">
-                <h3>Result number: <%=i%></h3>
+                <h3 class="subheading1Serv">Result number: <%=i+1%></h3>
                 Confidence: <%= result[i].confidence %> %
-                <%- result[i].Func %>
-                 Category: <%= result[i].Cat %>
+                <h3><%- result[i].Func %></h3>
+                 <p>Category: <%= result[i].Cat %></p>
               </div>
               <%}%>
               <%}else{%>
               <div class="col-md-12 col-sm-12 mt-3 rounded">
-                <h3>Only one result was returned</h3>
+                <p>Only one result was returned</p>
               </div>
               <%}%>
             <%}%>
