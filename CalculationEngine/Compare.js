@@ -8,11 +8,10 @@ const DataWarehouse = require('../public/DBJSONDATA/Written/StructureDB.js');
 //console.log(DataWarehouse[0].Functions);
 var filter = [];
 var search = function(input){
-    
     //funtion to retrieve from DBJSONDATA and compare
     for(var i = 0; i < DataWarehouse.length; i++){
 
-       let answer = wuzzy.ngram(input, DataWarehouse[i].Functions);
+       let answer = wuzzy.ngram(input.replace(/ /g, ""), DataWarehouse[i].Functions.replace(/ /g, ""));
   
       if(answer>0.4){
           mjAPI.typeset({
@@ -32,6 +31,7 @@ var search = function(input){
   filter.sort(function (a, b) { return a.confidence > b.confidence ? -1 : 1});
   return filter;
 };
+// search.cache('false');
 module.exports = search;
 
 

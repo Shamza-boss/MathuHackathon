@@ -49,7 +49,7 @@ app.get('/Mathml', (req, res) => {
 app.post('/RawMathml',(req, res)=>{
   //gets data from textbox in frontend
   var tex = req.body.RawMathml;
-  const yourMath = Mathml2latex.convert(tex);
+  var yourMath = Mathml2latex.convert(tex);
   console.log(yourMath)
   var datar = dataComparison(yourMath)
   var filter = searchEngine(yourMath)
