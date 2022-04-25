@@ -2,6 +2,7 @@ require("dotenv").config()
 var port = process.env.PORT || 1337;
 var express = require("express");
 var searchEngine = require('./CalculationEngine/Compare.js');
+var HannoEngine = require('./CalculationEngine/HannoEngine.js');
 var dataComparison = require('./CalculationEngine/dataC.js');
 var boilerplate = require('./CalculationEngine/Default.js')
 //Latex converter
@@ -20,6 +21,7 @@ app.use(express.json())
 // console.log(dataComparison('6d -9r +2t^{5}d -3t^{5}r'))
 
 // console.log(boilerplate().query)
+// console.log(HannoEngine('6d -9r +2t^{5}d -3t^{5}r'))
 
 //configuration setting for mathjax api
 mjAPI.config({
@@ -45,6 +47,10 @@ app.get('/RawTex', (req, res) => {
 app.get('/Mathml', (req, res) => {
     res.redirect('/');
 })
+app.get('/ToAcci', (req, res) => {
+  res.status(200).render('Acci.ejs', {query: boilerplate().query, result: boilerplate().boiler});
+})
+
 
 app.post('/RawMathml',(req, res)=>{
   //gets data from textbox in frontend
@@ -56,13 +62,21 @@ app.post('/RawMathml',(req, res)=>{
   res.status(200).render('Mathml.ejs', {query: datar, result: filter});
 
 })
-
+app.post('/ToAcci',(req, res)=>{
+  //gets data from textbox in frontend
+  var query = req.body.RawTex1
+  var datar = dataComparison(query)
+  var filter = HannoEngine(query)
+  console.log(filter[1]);
+res.status(200).render('ACCi.ejs', {query: datar, result: filter});
+})
 //post method is an action that the frontend form listens for... this listener is listening for the Rawtex route
 app.post('/RawTex',(req, res)=>{
   //gets data from textbox in frontend
   var tex = req.body.RawTex;
   var datar = dataComparison(tex)
   var filter = searchEngine(tex)
+  console.log(filter)
 res.status(200).render('Latex.ejs', {query: datar, result: filter});
 })
 //testroute to view sample json file
