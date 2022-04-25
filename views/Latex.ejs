@@ -54,7 +54,6 @@
               <h3 class="subheading1Serv">Top result</h3>
               <h3> Confidence: <span style="color:greenyellow"><%= result[0].confidence %>%</span></h3>
               <%- result[0].Func %>
-               Category: <%= result[0].Cat %>
             </div>
             <!-- this is where we render the result from the backend -->
             <%if(result.length > 1){%>
@@ -63,7 +62,6 @@
                 <h3 class="subheading1Serv">Result number: <%=i+1%></h3>
                 Confidence: <%= result[i].confidence %> %
                 <h3><%- result[i].Func %></h3>
-                 <p>Category: <%= result[i].Cat %></p>
               </div>
               <%}%>
               <%}else{%>

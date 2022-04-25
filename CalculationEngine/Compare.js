@@ -6,14 +6,16 @@ const DataWarehouse = require('../public/DBJSONDATA/Written/StructureDB.js');
 //text fuzzy similar jaccard jarowinkler tanimoto levenshtein ngram
 // var input = ' 6d -9r +2t^{5}d -3t^{5}r ';
 //console.log(DataWarehouse[0].Functions);
-var filter = [];
+// var filter = [];
+
 var search = function(input){
+  var filter = [];
     //funtion to retrieve from DBJSONDATA and compare
     for(var i = 0; i < DataWarehouse.length; i++){
 
        let answer = wuzzy.ngram(input.replace(/ /g, ""), DataWarehouse[i].Functions.replace(/ /g, ""));
   
-      if(answer>0.4){
+      if(answer>0.1){
           mjAPI.typeset({
             math: DataWarehouse[i].Functions,
             format: "TeX", // or "inline-TeX", "MathML"
@@ -30,6 +32,7 @@ var search = function(input){
   }
   filter.sort(function (a, b) { return a.confidence > b.confidence ? -1 : 1});
   return filter;
+  
 };
 // search.cache('false');
 module.exports = search;
