@@ -19,6 +19,3 @@ var dataConverter = function(input){
 };
 
 module.exports = dataConverter;
-
-
-

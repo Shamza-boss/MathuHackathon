@@ -193,8 +193,6 @@ function replaceAll(str, find, replace) {
   }
 
 
-
-
 function toASCII(latexExpression)
 {
       // Examples of complex expressions that work correctly:
@@ -279,20 +277,11 @@ function toASCII(latexExpression)
       //  \dfrac{3}{\sqrt[3]{4}}
 }
 
-
-
-
 function toMathJs(str)
 {  
-    //just a simple way to get the first few expression in the dataset to work
-    //str = replaceAll(str,'{','(');
-    //str = replaceAll(str,'}',')');
-
 
    str = toASCII(str);
 
-
-   
     //convert math string to mathjs object and simplifies the expression
    let res =  math.simplify(math.parse(str));
    //res = math.simplifyCore(math.parse(str))
@@ -335,7 +324,6 @@ Summation.transform = function (variter,start,stop,expression) //sum(k, 0, n, (-
   
     return res;
 }
-  
 
 
 //const math = require('mathjs');
@@ -386,29 +374,30 @@ Summation.transform = function (variter,start,stop,expression) //sum(k, 0, n, (-
 //summation not working ):
 //console.log(math.parse('Summation(k,0,5,k)').evaluate())
 
-var hannoEngine = (search)=>{
-    for(let i = 0; i < DataWarehouse.length; i++)
+var hannoEngine = (search)=>
 {
-    //item to compare 
-    //3x+2 to search
-    var input = toMathJs(search);
-    let item = toMathJs(DataWarehouse[i].Functions);  //toMathJs('3x+2');
-    let nodes_arr1 = treeToArray(input);
-    let nodes_arr2 = treeToArray(item);
+    for(let i = 0; i < DataWarehouse.length; i++)
+    {
+        //item to compare 
+        //3x+2 to search
+        var input = toMathJs(search);
+        let item = toMathJs(DataWarehouse[i].Functions);  //toMathJs('3x+2');
+        let nodes_arr1 = treeToArray(input);
+        let nodes_arr2 = treeToArray(item);
 
-    console.log('search: ',input.toString() , nodeArrayToStr(nodes_arr1));
-    console.log('item: ',item.toString() , nodeArrayToStr(nodes_arr2));
+        console.log('search: ',input.toString() , nodeArrayToStr(nodes_arr1));
+        console.log('item: ',item.toString() , nodeArrayToStr(nodes_arr2));
 
-    //console.log(math);
+        //console.log(math);
 
-    var result = compareArray(nodes_arr1,nodes_arr2);
-    return result
+        var result = compareArray(nodes_arr1,nodes_arr2);
+        return result
 
-    //logTree(search)
-    //logTree(item)
+        //logTree(search)
+        //logTree(item)
  
-}
+    }
 
 }
-//compare first 5 items in database
+
 module.exports = hannoEngine
