@@ -17,7 +17,8 @@ app.use(express.urlencoded({ extended: true }));//initialises port
 app.use(express.json())
 
 //test server
-//console.log(searchEngine('6d -9r +2t^{5}d -3t^{5}r'))
+// var christiaan = searchEngine("6d -9r +2t^{5}d -3t^{5}r");
+// console.log(christiaan)
 // console.log(dataComparison('6d -9r +2t^{5}d -3t^{5}r'))
 
 // console.log(boilerplate().query)
@@ -57,7 +58,9 @@ app.post('/RawMathml',(req, res)=>{
   var tex = req.body.RawMathml;
   var yourMath = Mathml2latex.convert(tex);
   console.log(yourMath)
+  //christiaan
   var datar = dataComparison(yourMath)
+  //query
   var filter = searchEngine(yourMath)
   res.status(200).render('Mathml.ejs', {query: datar, result: filter});
 
@@ -66,6 +69,7 @@ app.post('/ToAcci',(req, res)=>{
   //gets data from textbox in frontend
   var query = req.body.RawTex1
   var datar = dataComparison(query)
+  //hanno engine
   var filter = HannoEngine(query)
   console.log(filter[1]);
 res.status(200).render('ACCi.ejs', {query: datar, result: filter});
@@ -74,9 +78,9 @@ res.status(200).render('ACCi.ejs', {query: datar, result: filter});
 app.post('/RawTex',(req, res)=>{
   //gets data from textbox in frontend
   var tex = req.body.RawTex;
+  console.log(tex);
   var datar = dataComparison(tex)
   var filter = searchEngine(tex)
-  console.log(filter)
 res.status(200).render('Latex.ejs', {query: datar, result: filter});
 })
 //testroute to view sample json file

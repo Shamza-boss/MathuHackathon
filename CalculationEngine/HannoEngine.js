@@ -1,6 +1,7 @@
 const math = require('mathjs');
 const DataWarehouse = require('../public/DBJSONDATA/Written/StructureDB.js');
 
+
 function logTree(node)
 {
     node.traverse(function(node, path, parent)
