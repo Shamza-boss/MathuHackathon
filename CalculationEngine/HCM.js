@@ -1,6 +1,12 @@
 const math = require('mathjs');
+
+//mathml 
+//const { create, all } = require('mathjs');
+//const math = create(all);
+//const { cMathMLHandler } = require('mathjs-mathml');
+
 const wuzzy = require("wuzzy");
-const mjAPI = require("mathjax-node");
+//const mjAPI = require("mathjax-node");
 var dataComparison = require('./dataC.js');
 const DataWarehouse = require('../public/DBJSONDATA/Written/StructureDB.js');
 
@@ -344,25 +350,28 @@ function toASCII(latexExpression)
 function toMathJs(str)
 {  
 
+    let original, simplified;
+
    //console.log('in:'+ str);
 
    str = toASCII(str);
 
    //console.log('out:'+ str);
 
-   let res = '0';
+   
 
    try
    {
-        //convert math string to mathjs object and simplifies the expression   
-        res =  math.simplify(math.parse(str));
+        //convert math string to mathjs object and simplifies the expression
+        original = math.parse(str);
+        simplified =  math.simplify(original);
    }
    catch
    {
        console.log('Error, Could not parse:'+str);     
    }
-  
-    return res;
+        
+    return [original, simplified];
 }
 
 // create a custom function
@@ -398,8 +407,6 @@ Summation.transform = function (variter,start,stop,expression) //sum(k, 0, n, (-
     return res;
 }
 
-
-
 {
 //Idea of how to compare expressions:
 
@@ -412,10 +419,8 @@ Summation.transform = function (variter,start,stop,expression) //sum(k, 0, n, (-
 // 60% match => length not equal and token type is the same when tokens are ordered
 // 50% match => length not equal and some token types is the same when ordered
 }
-
-
-
-function Christian(search, item)
+//christiaan
+function StringParse(search, item)
 {
     let answer = wuzzy.ngram(search.replace(/ /g, ""), item.replace(/ /g, ""));
    
@@ -445,12 +450,17 @@ function Christian(search, item)
     return answer;
 }
 
-function Hanno(search, item)
+//hanno
+function MathParse(search, item)
 {
-    search = toMathJs(search);
-    item = toMathJs(item);
-    let nodes_arr1 = treeToArray(search);
-    let nodes_arr2 = treeToArray(item);
+    let [searchOriginal, searchSimplified] = toMathJs(search);
+    let [itemOriginal, itemSimplified] = toMathJs(item);
+
+    console.log('originalsearch: '+searchOriginal);
+    console.log('originalitem: '+itemOriginal);
+
+    let nodes_arr1 = treeToArray(searchSimplified);
+    let nodes_arr2 = treeToArray(itemSimplified);
 
     //console.log('search: ',input.toString() /*, nodeArrayToStr(nodes_arr1)*/);
     //console.log('item: ',item.toString() /*, nodeArrayToStr(nodes_arr2)*/);
@@ -485,18 +495,45 @@ function Hanno(search, item)
     OrderedTokenMatch = OrderedTokenMatch / len, OrderedValueMatch = OrderedValueMatch / len;
 
     //70% to 30% ratio
-
     let Overall = TokenMatch * 0.49 + ValueMatch * 0.21 + OrderedTokenMatch * 0.20 + OrderedValueMatch * 0.10
 
+    //console.log(searchOriginal,)
 
-    let result = 
+
+    let ExpressionBeforeSimplify = 
     {
-        SearchPlain:search.toString({implicit:'show',parenthesis: 'auto'}),
-        ItemPlain:item.toString({implicit:'show',parenthesis: 'auto'}),
+        //asscii
+        SearchPlain:searchOriginal.toString({implicit:'show',parenthesis: 'auto'}),
+        ItemPlain:itemOriginal.toString({implicit:'show',parenthesis: 'auto'}),
 
-        SearchLatex:search.toTex({implicit:'show',parenthesis: 'auto'}),
-        ItemLatex:item.toTex({implicit:'show',parenthesis: 'auto'}),
+        //latex
+        SearchLatex:searchOriginal.toTex({implicit:'show',parenthesis: 'auto'}),
+        ItemLatex:itemOriginal.toTex({implicit:'show',parenthesis: 'auto'}),
 
+     
+        //mathMl
+        //SearchMathMl:searchOriginal.toString(cMathMLHandler),
+        //ItemMathMl:itemOriginal.toString(cMathMLHandler)
+    }
+
+    let ExpressionAfterSimplify = 
+    {
+        ///asscii
+        SearchPlain:searchSimplified.toString({implicit:'show',parenthesis: 'auto'}),
+        ItemPlain:itemSimplified.toString({implicit:'show',parenthesis: 'auto'}),
+
+        //latex
+        SearchLatex:searchSimplified.toTex({implicit:'show',parenthesis: 'auto'}),
+        ItemLatex:itemSimplified.toTex({implicit:'show',parenthesis: 'auto'}),
+
+        //mathMl
+        //SearchMathMl:searchSimplified.toString(cMathMLHandler),
+        //ItemMathMl:itemSimplified.toString(cMathMLHandler)
+    }
+
+
+    let ConfidenceValues = 
+    {
         Overall:Overall,
 
         TokenMatch:TokenMatch,
@@ -505,10 +542,17 @@ function Hanno(search, item)
         OrderedTokenMatch:OrderedTokenMatch,
         OrderedValueMatch:OrderedValueMatch
     }
+
+
+    let result =
+    {
+        ExpressionBeforeSimplify:ExpressionBeforeSimplify,
+        ExpressionAfterSimplify:ExpressionAfterSimplify,
+        ConfidenceValues:ConfidenceValues
+    }
+
     return result;
 }
-
-
 
 
 //Both methods
@@ -517,75 +561,58 @@ var Engine = (search) =>
     var filter = new Array(DataWarehouse.length);
 
     for(let i = 0; i < 3/*DataWarehouse.length*/; i++)
-    {   
-       
+    {      
        let item = DataWarehouse[i].Functions;
 
-
-    //    console.log(Hanno(search, item));
-       //console.log(Christian(search,item));
+       console.log(MathParse(search,item));
+       console.log(StringParse(search,item));
 
 
        //use a third method that does a comparison based only on the string length?
 
-        let hanno, christiaan;
+       //math = hanno, string = christiaan
+        let mathConfidence, stringConfidence;
       
         //to store results from Hanno method
-        let obj = {}
+        let mathResults = {}
 
        //use this if we can parse the function
        if(true)
        {
-            obj = Hanno(search,item);
+            mathResults = MathParse(search,item);
 
-            hanno = obj.Overall * 0.6;
-            christiaan = Christian(obj.SearchPlain, obj.ItemPlain) * 0.4;
+            mathConfidence = mathResults.ConfidenceValues.Overall * 0.6;
+
+            console.log(mathResults.ExpressionBeforeSimplify.SearchPlain);
+            console.log(mathResults.ExpressionBeforeSimplify.ItemPlain);
+
+            stringConfidence = StringParse(mathResults.ExpressionBeforeSimplify.SearchPlain, mathResults.ExpressionBeforeSimplify.ItemPlain) * 0.4;
        }
         //else if we can't parse the function
         else
         {
-            hanno = 0;
-            //hanno =       Hanno(search,item).Overall * 0.4;//swapped
-            christiaan =     Christian(search, item) * 0.6;
+            mathConfidence = 0;        
+            stringConfidence = StringParse(search, item);
         }
 
-
-        let result;
-
-        //if we cant parse the expression
-        if(obj == null)
+        //if we could not parse the expression mathResults will be null
+        let result = 
         {
-            result = 
-            {
-                Value:(hanno + christiaan),
-                OriginalItemTex:item,
-                SimplifiedItemTex:null,
-                SimplifiedSearchTex:null,
-                Category:DataWarehouse[i].Category
-            }
+            mathResults:mathResults,
+            OverallConfidence:(mathConfidence + stringConfidence)
         }
-        else
-        {
-            result = 
-            {
-                Value:(hanno + christiaan),
-                OriginalItemTex:item,
-                SimplifiedItemTex:obj.ItemLatex,
-                SimplifiedSearchTex:obj.SearchLatex,
-                Category:DataWarehouse[i].Category
-            }
-        }
+
 
         filter[i] = result;
      
     }
     //sort
-    filter = filter.sort(function (a, b) { return a.Value > b.Value ? -1 : 1});
+    filter = filter.sort(function (a, b) { return a.OverallConfidence > b.OverallConfidence ? -1 : 1});
     return filter;
 }
 
 
-
+{
 //christiaan
 // var search = function(input)
 // {
@@ -617,8 +644,9 @@ var Engine = (search) =>
 //     filter.sort(function (a, b) { return a.confidence > b.confidence ? -1 : 1});
 //     return filter;
 // };
+}
 
 
-// console.log('\n\nArray:\n',Engine('r * (-(3 * t ^ 5) - 9) + d * (2 t ^ 5 + 6)'));
+console.log('\n\nArray:\n',Engine('r * (-(3 * t ^ 5) - 9) + d * (2 t ^ 5 + 6)'));
 
 module.exports = Engine;

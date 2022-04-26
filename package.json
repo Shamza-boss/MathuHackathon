@@ -32,6 +32,7 @@
     "mathjax": "^3.2.0",
     "mathjax-node": "^2.1.1",
     "mathjs": "^10.5.0",
+    "mathjs-mathml": "^0.3.1",
     "mathml-to-latex": "^1.2.0",
     "string-similarity": "^4.0.4",
     "wuzzy": "^0.1.8"
