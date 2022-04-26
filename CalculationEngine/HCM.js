@@ -1,4 +1,10 @@
 const math = require('mathjs');
+
+//mathml 
+//const { create, all } = require('mathjs');
+//const math = create(all);
+//const { cMathMLHandler } = require('mathjs-mathml');
+
 const wuzzy = require("wuzzy");
 var Normalize = require('./NormalizeInput.js');
 var convertM  = require('./dataC.js')
@@ -301,25 +307,28 @@ function toASCII(latexExpression)
 function toMathJs(str)
 {  
 
+    let original, simplified;
+
    //console.log('in:'+ str);
 
    str = toASCII(str);
 
    //console.log('out:'+ str);
 
-   let res = '0';
+   
 
    try
    {
-        //convert math string to mathjs object and simplifies the expression   
-        res =  math.simplify(math.parse(str));
+        //convert math string to mathjs object and simplifies the expression
+        original = math.parse(str);
+        simplified =  math.simplify(original);
    }
    catch
    {
        console.log('Error, Could not parse:'+str);     
    }
-  
-    return res;
+        
+    return [original, simplified];
 }
 
 // create a custom function
@@ -365,12 +374,17 @@ function Christian(search, item)
     return answer;
 }
 
-function Hanno(search, item)
+//hanno
+function MathParse(search, item)
 {
-    search = toMathJs(search);
-    item = toMathJs(item);
-    let nodes_arr1 = treeToArray(search);
-    let nodes_arr2 = treeToArray(item);
+    let [searchOriginal, searchSimplified] = toMathJs(search);
+    let [itemOriginal, itemSimplified] = toMathJs(item);
+
+    console.log('originalsearch: '+searchOriginal);
+    console.log('originalitem: '+itemOriginal);
+
+    let nodes_arr1 = treeToArray(searchSimplified);
+    let nodes_arr2 = treeToArray(itemSimplified);
 
     //console.log('search: ',input.toString() /*, nodeArrayToStr(nodes_arr1)*/);
     //console.log('item: ',item.toString() /*, nodeArrayToStr(nodes_arr2)*/);
@@ -405,18 +419,45 @@ function Hanno(search, item)
     OrderedTokenMatch = OrderedTokenMatch / len, OrderedValueMatch = OrderedValueMatch / len;
 
     //70% to 30% ratio
-
     let Overall = TokenMatch * 0.49 + ValueMatch * 0.21 + OrderedTokenMatch * 0.20 + OrderedValueMatch * 0.10
 
+    //console.log(searchOriginal,)
 
-    let result = 
+
+    let ExpressionBeforeSimplify = 
     {
-        SearchPlain:search.toString({implicit:'show',parenthesis: 'auto'}),
-        ItemPlain:item.toString({implicit:'show',parenthesis: 'auto'}),
+        //asscii
+        SearchPlain:searchOriginal.toString({implicit:'show',parenthesis: 'auto'}),
+        ItemPlain:itemOriginal.toString({implicit:'show',parenthesis: 'auto'}),
 
-        SearchLatex:search.toTex({implicit:'show',parenthesis: 'auto'}),
-        ItemLatex:item.toTex({implicit:'show',parenthesis: 'auto'}),
+        //latex
+        SearchLatex:searchOriginal.toTex({implicit:'show',parenthesis: 'auto'}),
+        ItemLatex:itemOriginal.toTex({implicit:'show',parenthesis: 'auto'}),
 
+     
+        //mathMl
+        //SearchMathMl:searchOriginal.toString(cMathMLHandler),
+        //ItemMathMl:itemOriginal.toString(cMathMLHandler)
+    }
+
+    let ExpressionAfterSimplify = 
+    {
+        ///asscii
+        SearchPlain:searchSimplified.toString({implicit:'show',parenthesis: 'auto'}),
+        ItemPlain:itemSimplified.toString({implicit:'show',parenthesis: 'auto'}),
+
+        //latex
+        SearchLatex:searchSimplified.toTex({implicit:'show',parenthesis: 'auto'}),
+        ItemLatex:itemSimplified.toTex({implicit:'show',parenthesis: 'auto'}),
+
+        //mathMl
+        //SearchMathMl:searchSimplified.toString(cMathMLHandler),
+        //ItemMathMl:itemSimplified.toString(cMathMLHandler)
+    }
+
+
+    let ConfidenceValues = 
+    {
         Overall:Overall,
 
         TokenMatch:TokenMatch,
@@ -425,10 +466,17 @@ function Hanno(search, item)
         OrderedTokenMatch:OrderedTokenMatch,
         OrderedValueMatch:OrderedValueMatch
     }
+
+
+    let result =
+    {
+        ExpressionBeforeSimplify:ExpressionBeforeSimplify,
+        ExpressionAfterSimplify:ExpressionAfterSimplify,
+        ConfidenceValues:ConfidenceValues
+    }
+
     return result;
 }
-
-
 
 
 //Both methods
@@ -438,72 +486,91 @@ var Engine = (search) =>
     var filter = new Array(DataWarehouse.length);
 
     for(let i = 0; i < 3/*DataWarehouse.length*/; i++)
-    {   
-       
+    {      
        let item = DataWarehouse[i].Functions;
 
-
-    //    console.log(Hanno(search, item));
-       //console.log(Christian(search,item));
+       console.log(MathParse(search,item));
+       console.log(StringParse(search,item));
 
 
        //use a third method that does a comparison based only on the string length?
 
-        let hanno, christiaan;
+       //math = hanno, string = christiaan
+        let mathConfidence, stringConfidence;
       
         //to store results from Hanno method
-        let obj = {}
-        try{
-            obj = Hanno(search,item);
-        }catch(err){
-            //exception handling doesnt really work in node because node is asynchronus... although this could catch unexpected errors that dont relate to parse errors
-            obj = 'error';
-        }
-        
+        let mathResults = {}
+
        //use this if we can parse the function
        if(obj != null || obj.Token != undefined || obj != "error")
        {
-            hanno = obj.Overall * 0.6;
-            christiaan = Christian(obj.SearchPlain, obj.ItemPlain) * 0.4;
+            mathResults = MathParse(search,item);
+
+            mathConfidence = mathResults.ConfidenceValues.Overall * 0.6;
+
+            console.log(mathResults.ExpressionBeforeSimplify.SearchPlain);
+            console.log(mathResults.ExpressionBeforeSimplify.ItemPlain);
+
+            stringConfidence = StringParse(mathResults.ExpressionBeforeSimplify.SearchPlain, mathResults.ExpressionBeforeSimplify.ItemPlain) * 0.4;
        }
         else
         {
-            hanno = 0;
-            christiaan = Christian(search, item) * 1;
+            mathConfidence = 0;        
+            stringConfidence = StringParse(search, item);
         }
 
+        //if we could not parse the expression mathResults will be null
+        let result = 
+        {
+            mathResults:mathResults,
+            OverallConfidence:(mathConfidence + stringConfidence)
+        }
 
-        let result;
-        let sum = Math.round((hanno + christiaan)*100);
-        //if we cant parse the expression
-        if(obj == null)
-        {
-            
-            result = 
-            {
-                Value:sum,
-                OriginalItemTex:item,
-                SimplifiedItemTex:null,
-                SimplifiedSearchTex:null
-            }
-        }
-        else
-        {
-            result = 
-            {
-                Value:sum,
-                OriginalItemTex:item,
-                SimplifiedItemTex:convertM(item),
-                SimplifiedSearchTex:convertM(search)
-            }
-        }
 
         filter[i] = result;
      
     }
     //sort
-    filter = filter.sort(function (a, b) { return a.Value > b.Value ? -1 : 1});
+    filter = filter.sort(function (a, b) { return a.OverallConfidence > b.OverallConfidence ? -1 : 1});
     return filter;
 }
+
+
+{
+//christiaan
+// var search = function(input)
+// {
+//     var filter = [];
+//       //funtion to retrieve from DBJSONDATA and compare
+//     for(var i = 0; i < DataWarehouse.length; i++)
+//     { 
+//         let answer = wuzzy.ngram(input.replace(/ /g, ""), DataWarehouse[i].Functions.replace(/ /g, ""));
+    
+//         if(answer>0.1)
+//         {
+//             mjAPI.typeset(
+//             {
+//               math: DataWarehouse[i].Functions,
+//               format: "TeX", // or "inline-TeX", "MathML"
+//               mml:true,      // or svg:true, or html:true
+//             }, function (data) 
+//             {
+//                 if (!data.errors)
+//                 {
+//                     //console.log(data.mml)
+//                     answer = Math.floor(answer*100)
+//                     //console.log(answer)
+//                     filter.push({confidence: answer, Func: data.mml, Cat: DataWarehouse[i].Category});
+//                 }
+//             });
+//         }
+//     }
+//     filter.sort(function (a, b) { return a.confidence > b.confidence ? -1 : 1});
+//     return filter;
+// };
+}
+
+
+console.log('\n\nArray:\n',Engine('r * (-(3 * t ^ 5) - 9) + d * (2 t ^ 5 + 6)'));
 
 module.exports = Engine;
