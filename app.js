@@ -1,8 +1,8 @@
 require("dotenv").config()
-var port = process.env.PORT || 1337;
+var port = process.env.PORT || 3000;
 var express = require("express");
 var searchEngine = require('./CalculationEngine/Compare.js');
-var HannoEngine = require('./CalculationEngine/HannoEngine.js');
+var HCM = require('./CalculationEngine/HCM.js');
 var dataComparison = require('./CalculationEngine/dataC.js');
 var boilerplate = require('./CalculationEngine/Default.js')
 //Latex converter
@@ -17,6 +17,8 @@ app.use(express.urlencoded({ extended: true }));//initialises port
 app.use(express.json())
 
 //test server
+// var filter = HCM("6d -9r +2t^{5}d -3t^{5}r")
+// console.log(filter)
 // var christiaan = searchEngine("6d -9r +2t^{5}d -3t^{5}r");
 // console.log(christiaan)
 // console.log(dataComparison('6d -9r +2t^{5}d -3t^{5}r'))
@@ -70,8 +72,8 @@ app.post('/ToAcci',(req, res)=>{
   var query = req.body.RawTex1
   var datar = dataComparison(query)
   //hanno engine
-  var filter = HannoEngine(query)
-  console.log(filter[1]);
+  var filter = HCM(query)
+  console.log(filter);
 res.status(200).render('ACCi.ejs', {query: datar, result: filter});
 })
 //post method is an action that the frontend form listens for... this listener is listening for the Rawtex route

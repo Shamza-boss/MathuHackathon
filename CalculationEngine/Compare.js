@@ -13,11 +13,11 @@ var search = function(input){
     //funtion to retrieve from DBJSONDATA and compare
     for(var i = 0; i < DataWarehouse.length; i++){
 
-       let answer = wuzzy.ngram(input.replace(/ /g, ""), DataWarehouse[i].Functions.replace(/ /g, ""));
+       let answer = wuzzy.ngram(input.replace(/\s/g, ""), DataWarehouse[i].Functions.replace(/\s/g, ""));
   
       if(answer>0.1){
           mjAPI.typeset({
-            math: DataWarehouse[i].Functions,
+            math: DataWarehouse[i].Functions.replace(/\s/g, ""),
             format: "TeX", // or "inline-TeX", "MathML"
             mml:true,      // or svg:true, or html:true
           }, function (data) {
