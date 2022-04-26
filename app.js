@@ -1,5 +1,5 @@
 require("dotenv").config()
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 1337;
 var express = require("express");
 var searchEngine = require('./CalculationEngine/Compare.js');
 var HCM = require('./CalculationEngine/HCM.js');
@@ -70,11 +70,8 @@ app.post('/RawMathml',(req, res)=>{
 app.post('/ToAcci',(req, res)=>{
   //gets data from textbox in frontend
   var query = req.body.RawTex1
-  var datar = dataComparison(query)
-  //hanno engine
   var filter = HCM(query)
-  console.log(filter);
-res.status(200).render('ACCi.ejs', {query: datar, result: filter});
+  res.status(200).render('ACCi.ejs', {result: filter});
 })
 //post method is an action that the frontend form listens for... this listener is listening for the Rawtex route
 app.post('/RawTex',(req, res)=>{
@@ -84,9 +81,6 @@ app.post('/RawTex',(req, res)=>{
   var datar = dataComparison(tex)
   var filter = searchEngine(tex)
 res.status(200).render('Latex.ejs', {query: datar, result: filter});
-})
-//testroute to view sample json file
-app.get('/test', (req, res)=>{
 })
 //catches routes we havent coded for
 app.use((req, res) => {

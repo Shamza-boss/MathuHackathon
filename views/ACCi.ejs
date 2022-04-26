@@ -55,16 +55,17 @@
             </div>
             <div class="col-md-6 col-sm-12 mt-3 rounded">
               <h3 class="subheading1Serv">Top result</h3>
+              <h3><%- result[0].SimplifiedItemTex %></h3>
               <h3> Confidence: <span style="color:greenyellow"><%= result[0].Value %>%</span></h3>
-              <%- result[0].SimplifiedItemTex %>
             </div>
             <!-- this is where we render the result from the backend -->
             <%if(result.length > 1){%>
-              <% for (var i = 1; i<result.length; i++){%>
+              <% for (var i = 1; i<3; i++){%>
               <div class="col-md-12 col-sm-12 mt-3 rounded">
                 <h3 class="subheading1Serv">Result number: <%=i+1%></h3>
-                Confidence: <%= result[1].Value %> %
-                <h3><%- result[1].SimplifiedItemTex %></h3>
+                <h3><%- result[i].SimplifiedItemTex %></h3>
+                Confidence: <%= result[i].Value %> %
+                
               </div>
               <%}%>
               <%}else{%>

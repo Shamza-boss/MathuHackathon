@@ -1,33 +1,9 @@
 const math = require('mathjs');
 const wuzzy = require("wuzzy");
-const mjAPI = require("mathjax-node");
-var dataComparison = require('./dataC.js');
-const DataWarehouse = require('../public/DBJSONDATA/Written/StructureDB.js');
+var Normalize = require('./NormalizeInput.js');
+var convertM  = require('./dataC.js')
+const DataWarehouse = require('../public/DBJSONDATA/Written/data.js');
 
-
-function logTree(node)
-{
-    node.traverse(function(node, path, parent)
-    {
-        switch(node.type)
-        {
-            case 'OperatorNode':
-                console.log(node.type, node.op);       
-                break;
-            case 'ConstantNode':
-                console.log(node.type, node.value);
-                break;
-            case 'SymbolNode':
-                console.log(node.type, node.name);
-                break;
-            case 'FunctionNode':
-                console.log(node.type, node.name);
-                break;
-            default:
-                console.log('Undefined node: ' + node.type);                     
-        }
-    });
-}
 
 function treeToArray(node)
 {
@@ -106,17 +82,8 @@ function compareArray(nodes1,nodes2,order = false)
               return a.type < b.type ? -1 : 1;
             }
         });
-
-        //console.log("A1:",nodes1);
-        //console.log("a2: "+nodes2);
     }
 
-
-    if(nodes1.length != nodes2.length)
-    {
-        //Do something if length is not equal
-       // console.log('expression length differs');
-    }
       
     for(let i = 0; i < len; i++)
     {   
@@ -125,11 +92,7 @@ function compareArray(nodes1,nodes2,order = false)
             Operator:false,Constant:false,Symbol:false,Function:false,       
 
             isAnyMatch:false  
-            // {
-            //     return this.Operator || this.Constant || this.Symbol || this.Function;
-            // }
         };
-        //object to check if the node type and value are equal
         let match = {Type: Type, Value: false,stringValueSearch:'',stringValueItem:''};
           
         if(nodes1[i].type === nodes2[i].type)
@@ -138,11 +101,8 @@ function compareArray(nodes1,nodes2,order = false)
 
             switch(nodes1[i].type)
             {            
-                case 'OperatorNode':
-                        //console.log(nodes1[i].type + '  ' + nodes1[i].op)                                            
+                case 'OperatorNode':                                          
                         match.Type.Operator = true;
-                       
-                        //check if values match
                         if(nodes1[i].op === nodes2[i].op)
                         {
                             match.Value = true;                           
@@ -150,8 +110,7 @@ function compareArray(nodes1,nodes2,order = false)
                         match.stringValueSearch = nodes1[i].op;
 
                     break;
-                case 'ConstantNode':
-                        //console.log(nodes1[i].type + '  ' + nodes1[i].value)                         
+                case 'ConstantNode':                        
                         match.Type.Constant = true;   
                                          
                         if(nodes1[i].value === nodes2[i].value)
@@ -161,8 +120,7 @@ function compareArray(nodes1,nodes2,order = false)
                         match.stringValueSearch = nodes1[i].value;
                         
                     break;
-                case 'SymbolNode':
-                        //console.log(nodes1[i].type + '  ' + nodes1[i].name)                        
+                case 'SymbolNode':                      
                         match.Type.Symbol = true;                   
                         
                         if(nodes1[i].name === nodes2[i].name)
@@ -172,8 +130,7 @@ function compareArray(nodes1,nodes2,order = false)
                         match.stringValueSearch = nodes1[i].name;
 
                     break;
-                case 'FunctionNode':
-                        //console.log(nodes1[i].type + '  ' + nodes1[i].name)                            
+                case 'FunctionNode':                         
                         match.Type.Function = true;                
                         
                         if(nodes1[i].name === nodes2[i].name)  
@@ -400,48 +357,11 @@ Summation.transform = function (variter,start,stop,expression) //sum(k, 0, n, (-
 
 
 
-{
-//Idea of how to compare expressions:
-
-// Match expression steps
-// where token is a constant, operator, symbol or function and length = token length
-// 100% match => equal length and token type + token value is the same
-// 90% match => equal length and token type is the same
-// 80% match => equal length and token type + value is the same when tokens are ordered 
-// 70% match => equal length and token type is the same when tokens are ordered 
-// 60% match => length not equal and token type is the same when tokens are ordered
-// 50% match => length not equal and some token types is the same when ordered
-}
-
 
 
 function Christian(search, item)
 {
     let answer = wuzzy.ngram(search.replace(/ /g, ""), item.replace(/ /g, ""));
-   
-    //if(answer>0.1)
-    // {
-    //     mjAPI.typeset(
-    //     {
-    //         math: item,
-    //         format: "TeX", // or "inline-TeX", "MathML"
-    //         mml:true,      // or svg:true, or html:true
-    //     }, function (data) 
-    //     {
-    //         if (!data.errors)
-    //         {
-    //             //console.log(data.mml)
-    //             answer = Math.floor(answer*100)
-    //             //console.log(answer)
-    //             return ({confidence: answer, Func: data.mml});
-    //         }
-    //         console.log(data);
-    //     });
-    // }
-    // return 'Undefined result';
-
-    //answer = Math.floor(answer*100);
-
     return answer;
 }
 
@@ -514,6 +434,7 @@ function Hanno(search, item)
 //Both methods
 var Engine = (search) =>
 {
+    search = Normalize(search);
     var filter = new Array(DataWarehouse.length);
 
     for(let i = 0; i < 3/*DataWarehouse.length*/; i++)
@@ -532,47 +453,48 @@ var Engine = (search) =>
       
         //to store results from Hanno method
         let obj = {}
-
-       //use this if we can parse the function
-       if(true)
-       {
+        try{
             obj = Hanno(search,item);
-
+        }catch(err){
+            //exception handling doesnt really work in node because node is asynchronus... although this could catch unexpected errors that dont relate to parse errors
+            obj = 'error';
+        }
+        
+       //use this if we can parse the function
+       if(obj != null || obj.Token != undefined || obj != "error")
+       {
             hanno = obj.Overall * 0.6;
             christiaan = Christian(obj.SearchPlain, obj.ItemPlain) * 0.4;
        }
-        //else if we can't parse the function
         else
         {
             hanno = 0;
-            //hanno =       Hanno(search,item).Overall * 0.4;//swapped
-            christiaan =     Christian(search, item) * 0.6;
+            christiaan = Christian(search, item) * 1;
         }
 
 
         let result;
-
+        let sum = Math.round((hanno + christiaan)*100);
         //if we cant parse the expression
         if(obj == null)
         {
+            
             result = 
             {
-                Value:(hanno + christiaan),
+                Value:sum,
                 OriginalItemTex:item,
                 SimplifiedItemTex:null,
-                SimplifiedSearchTex:null,
-                Category:DataWarehouse[i].Category
+                SimplifiedSearchTex:null
             }
         }
         else
         {
             result = 
             {
-                Value:(hanno + christiaan),
+                Value:sum,
                 OriginalItemTex:item,
-                SimplifiedItemTex:obj.ItemLatex,
-                SimplifiedSearchTex:obj.SearchLatex,
-                Category:DataWarehouse[i].Category
+                SimplifiedItemTex:convertM(item),
+                SimplifiedSearchTex:convertM(search)
             }
         }
 
@@ -583,42 +505,5 @@ var Engine = (search) =>
     filter = filter.sort(function (a, b) { return a.Value > b.Value ? -1 : 1});
     return filter;
 }
-
-
-
-//christiaan
-// var search = function(input)
-// {
-//     var filter = [];
-//       //funtion to retrieve from DBJSONDATA and compare
-//     for(var i = 0; i < DataWarehouse.length; i++)
-//     { 
-//         let answer = wuzzy.ngram(input.replace(/ /g, ""), DataWarehouse[i].Functions.replace(/ /g, ""));
-    
-//         if(answer>0.1)
-//         {
-//             mjAPI.typeset(
-//             {
-//               math: DataWarehouse[i].Functions,
-//               format: "TeX", // or "inline-TeX", "MathML"
-//               mml:true,      // or svg:true, or html:true
-//             }, function (data) 
-//             {
-//                 if (!data.errors)
-//                 {
-//                     //console.log(data.mml)
-//                     answer = Math.floor(answer*100)
-//                     //console.log(answer)
-//                     filter.push({confidence: answer, Func: data.mml, Cat: DataWarehouse[i].Category});
-//                 }
-//             });
-//         }
-//     }
-//     filter.sort(function (a, b) { return a.confidence > b.confidence ? -1 : 1});
-//     return filter;
-// };
-
-
-// console.log('\n\nArray:\n',Engine('r * (-(3 * t ^ 5) - 9) + d * (2 t ^ 5 + 6)'));
 
 module.exports = Engine;
