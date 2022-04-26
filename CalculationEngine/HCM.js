@@ -2,7 +2,7 @@ const math = require('mathjs');
 const wuzzy = require("wuzzy");
 const mjAPI = require("mathjax-node");
 var dataComparison = require('./dataC.js');
-const DataWarehouse = require('../public/DBJSONDATA/Written/StructureDB.js');
+const DataWarehouse = require('../public/DBJSONDATA/Written/data.js');
 
 
 function logTree(node)
