@@ -18,8 +18,8 @@ app.use(express.json())
 
 // console.log(dataComparison('6d -9r +2t^{5}d -3t^{5}r'))
 //test server
-// var filter = HCM("\frac{y - 3}{3}")
-// console.log(filter)
+var filter = HCM("6d -9r +2t^{5}d -3t^{5}r")
+console.log(filter)
 // console.log(Math.round(filter[0].mathResults.ConfidenceValues.Overall)*100)
 // var christiaan = searchEngine("6d -9r +2t^{5}d -3t^{5}r");
 // console.log(christiaan)

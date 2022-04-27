@@ -281,7 +281,7 @@ function toASCII(latexExpression)
 
     if(expression.includes("frac") || expression.includes("\frac")) //replacing variations of \frac will cause issues, need to check before running
     {
-        expression = expression.replace(/tfrac/g,"\frac").replace(/dfrac/g,"\frac").replace(/\frac/g, "").replace(/}{/g, ")/(").replace(/\frac{/g, "(").replace(/}/g, ")"); 
+        expression = expression.replace(/tfrac/g,"\frac").replace(/dfrac/g,"\frac").replace(/\frac/g, "").replace(/\\frac/g, "").replace(/}{/g, ")/(").replace(/\frac{/g, "(").replace(/}/g, ")"); 
     }
 
     expression = expression    //These replacements will not cause issues if none of them are present in the expression
@@ -362,7 +362,6 @@ Summation.transform = function (variter,start,stop,expression) //sum(k, 0, n, (-
   
     return res;
 }
-
 
 
 
@@ -454,10 +453,9 @@ function MathParse(search, item)
         SearchLatex:searchOriginal.toTex({implicit:'show',parenthesis: 'auto'}),
         ItemLatex:itemOriginal.toTex({implicit:'show',parenthesis: 'auto'}),
 
-     
         //mathMl
-        SearchMathMl:convertM(search),
-        ItemMathMl:convertM(item)
+        //SearchMathMl:convertM(search),
+        //ItemMathMl:convertM(item)
     }
 
     let ExpressionAfterSimplify = 
@@ -471,8 +469,8 @@ function MathParse(search, item)
         ItemLatex:itemSimplified.toTex({implicit:'show',parenthesis: 'auto'}),
 
         //mathMl
-        SearchMathMl:convertM(search),
-        ItemMathMl:convertM(item)
+        //SearchMathMl:convertM(search),
+        //ItemMathMl:convertM(item)
     }
 
 
@@ -566,10 +564,21 @@ var Engine = (search) =>
             ) * 1;          
         }
 
+
+        let expressions = 
+        {
+            SearchMathMl:convertM(search),
+            ItemMathMl:convertM(item)
+        }
+
+
         //if we could not parse the expression in mathml, mathResults will be null but Overal confidence will still work
         let result = 
         {
+            //from mathjs, can be null
             mathResults: mathResults,
+            //from database and user
+            expressions:expressions,
             OverallConfidence: round((mathConfidence + stringConfidence)*100.0, 3)
         }
 
