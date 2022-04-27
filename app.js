@@ -18,12 +18,37 @@ app.use(express.json())
 
 // console.log(dataComparison('6d -9r +2t^{5}d -3t^{5}r'))
 //test server
-var filter = HCM("6d -9r +2t^{5}d -3t^{5}r")
-console.log(filter)
+// var filter = HCM("6d -9r +2t^{5}d -3t^{5}r")
+// console.log(filter[0].expressions)
 // console.log(Math.round(filter[0].mathResults.ConfidenceValues.Overall)*100)
 // var christiaan = searchEngine("6d -9r +2t^{5}d -3t^{5}r");
 // console.log(christiaan)
 // console.log(dataComparison('6d -9r +2t^{5}d -3t^{5}r'))
+// mathml = `<math xmlns="http://www.w3.org/1998/Math/MathML" display="block" alttext="6d -9r +2t^{5}d -3t^{5}r">
+// <mn>6</mn>
+// <mi>d</mi>
+// <mo>&#x2212;<!-- − --></mo>
+// <mn>9</mn>
+// <mi>r</mi>
+// <mo>+</mo>
+// <mn>2</mn>
+// <msup>
+// <mi>t</mi>
+// <mrow class="MJX-TeXAtom-ORD">
+// <mn>5</mn>
+// </mrow>
+// </msup>
+// <mi>d</mi>
+// <mo>&#x2212;<!-- − --></mo>
+// <mn>3</mn>
+// <msup>
+// <mi>t</mi>
+// <mrow class="MJX-TeXAtom-ORD">
+// <mn>5</mn>
+// </mrow>
+// </msup>
+// <mi>r</mi>
+// </math>`
 
 // console.log(boilerplate().query)
 // console.log(HannoEngine('6d -9r +2t^{5}d -3t^{5}r'))
@@ -73,8 +98,8 @@ app.post('/RawMathml',(req, res)=>{
   var yourMath = Mathml2latex.convert(query);
   console.log(yourMath)
   var filter = HCM(yourMath)
-  // console.log(filter)
-  console.log(filter[0].mathResults.ExpressionBeforeSimplify)
+  console.log(filter)
+  // console.log(filter[0].mathResults.ExpressionBeforeSimplify)
   res.status(200).render('Mathml.ejs', {result: filter});
 })
 app.post('/ToAcci',(req, res)=>{
