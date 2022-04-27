@@ -16,9 +16,11 @@ app.use(express.static(__dirname + '/public'));//allows access to public folder 
 app.use(express.urlencoded({ extended: true }));//initialises port
 app.use(express.json())
 
+// console.log(dataComparison('6d -9r +2t^{5}d -3t^{5}r'))
 //test server
-// var filter = HCM("6d -9r +2t^{5}d -3t^{5}r")
+// var filter = HCM("\frac{y - 3}{3}")
 // console.log(filter)
+// console.log(Math.round(filter[0].mathResults.ConfidenceValues.Overall)*100)
 // var christiaan = searchEngine("6d -9r +2t^{5}d -3t^{5}r");
 // console.log(christiaan)
 // console.log(dataComparison('6d -9r +2t^{5}d -3t^{5}r'))
@@ -44,9 +46,9 @@ mjAPI.start();
 app.get('/', (req, res) => {
     res.status(200).render('Mathml.ejs', {query: boilerplate().query, result: boilerplate().boiler});
 })
-app.get('/RawTex', (req, res) => {
-  res.status(200).render('Latex.ejs', {query: boilerplate().query, result: boilerplate().boiler});
-})
+// app.get('/RawTex', (req, res) => {
+//   res.status(200).render('Latex.ejs', {query: boilerplate().query, result: boilerplate().boiler});
+// })
 app.get('/Mathml', (req, res) => {
     res.redirect('/');
 })
@@ -55,22 +57,32 @@ app.get('/ToAcci', (req, res) => {
 })
 
 
+// app.post('/RawMathml',(req, res)=>{
+//   //gets data from textbox in frontend
+//   var tex = req.body.RawMathml;
+//   var yourMath = Mathml2latex.convert(tex);
+//   // console.log(yourMath)
+//   var datar = dataComparison(yourMath)
+//   var filter = searchEngine(yourMath)
+//   res.status(200).render('Latex.ejs', {query: datar, result: filter});
+
+// })
 app.post('/RawMathml',(req, res)=>{
   //gets data from textbox in frontend
-  var tex = req.body.RawMathml;
-  var yourMath = Mathml2latex.convert(tex);
+  var query = req.body.RawMathml
+  var yourMath = Mathml2latex.convert(query);
   console.log(yourMath)
-  //christiaan
-  var datar = dataComparison(yourMath)
-  //query
-  var filter = searchEngine(yourMath)
-  res.status(200).render('Mathml.ejs', {query: datar, result: filter});
-
+  var filter = HCM(yourMath)
+  // console.log(filter)
+  console.log(filter[0].mathResults.ExpressionBeforeSimplify)
+  res.status(200).render('Mathml.ejs', {result: filter});
 })
 app.post('/ToAcci',(req, res)=>{
   //gets data from textbox in frontend
   var query = req.body.RawTex1
   var filter = HCM(query)
+  console.log(filter)
+  // console.log(filter[0].mathResults.ExpressionBeforeSimplify)
   res.status(200).render('ACCi.ejs', {result: filter});
 })
 //post method is an action that the frontend form listens for... this listener is listening for the Rawtex route

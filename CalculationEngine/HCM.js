@@ -322,7 +322,7 @@ function toMathJs(str)
    }
    catch
    {
-       console.log('Error, Could not parse:'+str); 
+    //    console.log('Error, Could not parse:'+str); 
        
        return [null,null];
    }
@@ -441,7 +441,7 @@ function MathParse(search, item)
     //70% to 30% ratio
     let Overall = TokenMatch * 0.49 + ValueMatch * 0.21 + OrderedTokenMatch * 0.20 + OrderedValueMatch * 0.10
 
-    //console.log(searchOriginal,)
+   
 
 
     let ExpressionBeforeSimplify = 
@@ -456,8 +456,8 @@ function MathParse(search, item)
 
      
         //mathMl
-        //SearchMathMl:searchOriginal.toString(cMathMLHandler),
-        //ItemMathMl:itemOriginal.toString(cMathMLHandler)
+        SearchMathMl:convertM(search),
+        ItemMathMl:convertM(item)
     }
 
     let ExpressionAfterSimplify = 
@@ -471,8 +471,8 @@ function MathParse(search, item)
         ItemLatex:itemSimplified.toTex({implicit:'show',parenthesis: 'auto'}),
 
         //mathMl
-        //SearchMathMl:searchSimplified.toString(cMathMLHandler),
-        //ItemMathMl:itemSimplified.toString(cMathMLHandler)
+        SearchMathMl:convertM(search),
+        ItemMathMl:convertM(item)
     }
 
 
@@ -563,7 +563,6 @@ var Engine = (search) =>
             (            
                 StringParse(search, item),
                 StringParse(normalizedSearch, Normalize(item))
-
             ) * 1;          
         }
 
@@ -585,6 +584,7 @@ var Engine = (search) =>
 
 // 6d -9r +2t^{5}d -3t^{5}r 
 //r * (-(3 * t ^ 5) - 9) + d * (2 t ^ 5 + 6)
-console.log('\n\nArray:\n',Engine('6d -9r +2t^{5}d -3t^{5}r '));
-
+// console.log('\n\nArray:\n',Engine('6d -9r +2t^{5}d -3t^{5}r '));
+//console.log(Engine('6d -9r +2t^{5}d -3t^{5}r ')[0].mathResults);
+// console.log(convertM('6d -9r +2t^{5}d -3t^{5}r'))
 module.exports = Engine;

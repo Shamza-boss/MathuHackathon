@@ -1,8 +1,7 @@
 var mjAPI = require("mathjax-node");
-var datar = "Input data so we can search";
 
 var dataConverter = function(input){
-      var datar = "";
+      let datar = "";
       
       mjAPI.typeset({
         math: input,
@@ -10,11 +9,12 @@ var dataConverter = function(input){
         mml:true,      // or svg:true, or html:true
       }, function (data) {
         if (!data.errors) {
-            //console.log(data.mml)
+            // console.log(data.mml)
             //pushing collected data to global array... datar
             datar = data.mml;
           }
       });
+    //  console.log(datar)
     return datar;
 };
 
