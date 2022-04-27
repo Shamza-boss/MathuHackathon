@@ -51,20 +51,20 @@
           <%if(result.length > 1){%>
             <div class="col-md-6 col-sm-12 mt-3 rounded">
               <h3 class="subheading1Serv">Query</h3>
-              <h3><%- result[0].mathResults.ExpressionBeforeSimplify.SearchMathMl %></h3>
+              <h3><%- result[0].expressions.SearchMathMl %></h3>
             </div>
             <div class="col-md-6 col-sm-12 mt-3 rounded">
               <h3 class="subheading1Serv">Top result</h3>
-              <h3><%- result[0].mathResults.ExpressionBeforeSimplify.ItemMathMl %></h3>
-              <h3> Confidence: <span style="color:greenyellow"><%= Math.round(result[0].mathResults.ConfidenceValues.Overall*100) %>%</span></h3>
+              <h3><%- result[0].expressions.ItemMathMl %></h3>
+              <h3> Confidence: <span style="color:greenyellow"><%= result[0].OverallConfidence %>%</span></h3>
             </div>
             <!-- this is where we render the result from the backend -->
             <%if(result.length > 1){%>
               <% for (var i = 1; i<4; i++){%>
               <div class="col-md-12 col-sm-12 mt-3 rounded">
                 <h3 class="subheading1Serv">Result number: <%=i+1%></h3>
-                <h3><%- result[i].mathResults.ExpressionBeforeSimplify.ItemMathMl %></h3>
-                Confidence: <%= Math.round(result[i].mathResults.ConfidenceValues.Overall*100) %> %
+                <h3><%- result[i].expressions.ItemMathMl %></h3>
+                Confidence: <%= result[i].OverallConfidence %> %
                 
               </div>
               <%}%>
