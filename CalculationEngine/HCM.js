@@ -649,8 +649,8 @@ var Engine = (search) =>
 
         let expressions = 
         {
-            SearchMathMl:search,
-            ItemMathMl:item
+            SearchMathMl:convertM(search),
+            ItemMathMl:convertM(item)
         }
 
 
@@ -712,7 +712,7 @@ var Engine = (search) =>
 //console.log(convertM('6d -9r +2t^{5}d -3t^{5}r'))
 //console.log(Engine('6d -9r +2t^{5}d -3t^{5}r ')[0].expressions.SearchMathMl);
 
-let eng = Engine('\frac{ y-3}{3}');
+let eng = Engine('\\frac{ y-3}{3}');
 
 for(let i = 0; i < 3; i++)
     console.log(eng[i]);
