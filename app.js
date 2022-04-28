@@ -106,7 +106,8 @@ app.post('/ToAcci',(req, res)=>{
   //gets data from textbox in frontend
   var query = req.body.RawTex1
   var filter = HCM(query)
-  console.log(filter)
+  for(let i = 0;i<3;i++)//log only best 3
+    console.log(filter[i]);
   // console.log(filter[0].mathResults.ExpressionBeforeSimplify)
   res.status(200).render('ACCi.ejs', {result: filter});
 })
