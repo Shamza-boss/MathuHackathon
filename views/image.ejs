@@ -20,14 +20,11 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link" href="/Mathml">Input Mathml</a><!-- need to configure home link -->
+              <a class="nav-link" href="/">Input Mathml</a><!-- need to configure home link -->
             </li>
             <li class="nav-item">
-              <a  class="nav-link" href="/RawTex" >Input Latex</a>
+              <a  class="nav-link active" href="/Pic" >Upload Image</a><!-- need to configure>-->
             </li>
-            <li class="nav-item">
-                <a  class="nav-link active" href="/ToAcci" >TestingH</a>
-              </li>
           </ul>
         </div>
       </div>
@@ -41,11 +38,10 @@
       <h3 class="subheading1Serv">Optimize Prime Searcher</h3>
           <h1 class="big-headingServ1">What is your query?</h1>
         <div class="row philCard DatabaseContent">
-          <form  method="POST"  autocomplete="off" action="/images/" enctype="multipart/form-data">
-            <div class="mb-3">
-                <label for="formFile" class="form-label">Default file input example</label>
+          <form  method="POST"  autocomplete="off" action="/Pic" enctype="multipart/form-data">
+            <div class="input-group mb-12">
                 <input class="form-control" type="file" id="formFile" name="image" aria-describedby="button-addon2">
-                <button class="btn btn-primary" type="submit" name="filename" id="button-addon1" >Search</button>
+                <button class="btn btn-primary" type="submit" name="filename" id="button-addon2" >Search</button>
               </div>
           </form>
           <!-- this is where we render the result from the backend -->
@@ -81,3 +77,4 @@
         </div>
       </div>
   </section>
+</body>

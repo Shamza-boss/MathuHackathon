@@ -711,9 +711,9 @@ var Engine = (search) =>
 
 //console.log(convertM('6d -9r +2t^{5}d -3t^{5}r'))
 //console.log(Engine('6d -9r +2t^{5}d -3t^{5}r ')[0].expressions.SearchMathMl);
+var q= '\\frac{ y-3}{3}';
+let eng = Engine(q.slice(1));
 
-// let eng = Engine('\\frac{ y-3}{3}');
-
-// for(let i = 0; i < 3; i++)
-//     console.log(eng[i]);
+for(let i = 0; i < 3; i++)
+    console.log(eng[i]);
 module.exports = Engine;
