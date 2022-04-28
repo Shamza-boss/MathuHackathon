@@ -25,16 +25,24 @@
   },
   "homepage": "https://github.com/Shamza-boss/MathuHackathon#readme",
   "dependencies": {
+    "@babel/runtime": "^7.17.9",
+    "@jimp/custom": "^0.16.1",
+    "@jimp/plugins": "^0.16.1",
+    "@jimp/types": "^0.16.1",
     "dotenv": "^16.0.0",
     "ejs": "^3.1.6",
     "express": "^4.17.3",
     "fs": "^0.0.1-security",
+    "jimp": "^0.16.1",
     "mathjax": "^3.2.0",
     "mathjax-node": "^2.1.1",
     "mathjs": "^10.5.0",
     "mathjs-mathml": "^0.3.1",
     "mathml-to-latex": "^1.2.0",
+    "multer": "^1.4.4",
+    "regenerator-runtime": "^0.13.9",
     "string-similarity": "^4.0.4",
+    "tesseract.js": "^2.1.5",
     "wuzzy": "^0.1.8"
   }
 }

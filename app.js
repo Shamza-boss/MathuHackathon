@@ -5,12 +5,18 @@ var searchEngine = require('./CalculationEngine/Compare.js');
 var HCM = require('./CalculationEngine/HCM.js');
 var dataComparison = require('./CalculationEngine/dataC.js');
 var boilerplate = require('./CalculationEngine/Default.js')
+var storage = require('./CalculationEngine/ImageReader.js')
+var clarifyImage = require('./CalculationEngine/Clarifyimage.js')
+var multer = require("multer");
 //Latex converter
 const Mathml2latex = require('mathml-to-latex');
 //mathjax api
 var mjAPI = require("mathjax-node");
+var Tesseract = require('tesseract.js');
 
 var app = express();
+
+
 
 app.use(express.static(__dirname + '/public'));//allows access to public folder containing pics and other documents
 app.use(express.urlencoded({ extended: true }));//initialises port
@@ -66,7 +72,8 @@ mjAPI.config({
 });
 //initialises mathjax to listen
 mjAPI.start();
-
+var upload = multer({storage:storage});
+var OCR_Text;
 //sample input raw tex code
 app.get('/', (req, res) => {
     res.status(200).render('Mathml.ejs', {query: boilerplate().query, result: boilerplate().boiler});
@@ -80,18 +87,33 @@ app.get('/Mathml', (req, res) => {
 app.get('/ToAcci', (req, res) => {
   res.status(200).render('Acci.ejs', {query: boilerplate().query, result: boilerplate().boiler});
 })
+app.get('/ImageUpload', (req, res) => {
+  res.status(200).render('image.ejs', {query: boilerplate().query, result: boilerplate().boiler});
+})
+app.post('/images/', upload.single('image'),(req,res)=>{
+  //console.log(req.file);
+  try {
+      var filestring = './public/images/'.concat(req.file.filename); // <--- directory + filename
+      //desaturates image and makes it clear
+      clarifyImage(filestring);   //  <--- Clarify
+      Tesseract.recognize(
+          'OCR_Ready_Image.png',
+          'equ+eng',
+          {logger: m => console.log(m)}
+          ).then(({data: {text}}) => {
+              //var result = res.json({text});
+              OCR_Text = JSON.stringify(text);
+              console.log(OCR_Text);
+              res.json({text});
+              //return result;
+              // var filter = HCM(OCR_Text)
+              // res.status(200).render('image.ejs', {result: filter});
+      })
 
-
-// app.post('/RawMathml',(req, res)=>{
-//   //gets data from textbox in frontend
-//   var tex = req.body.RawMathml;
-//   var yourMath = Mathml2latex.convert(tex);
-//   // console.log(yourMath)
-//   var datar = dataComparison(yourMath)
-//   var filter = searchEngine(yourMath)
-//   res.status(200).render('Latex.ejs', {query: datar, result: filter});
-
-// })
+  } catch (error) {
+      console.log(error);
+  }
+})
 app.post('/RawMathml',(req, res)=>{
   //gets data from textbox in frontend
   var query = req.body.RawMathml
@@ -111,6 +133,9 @@ app.post('/ToAcci',(req, res)=>{
   // console.log(filter[0].mathResults.ExpressionBeforeSimplify)
   res.status(200).render('ACCi.ejs', {result: filter});
 })
+var upload = multer({storage:storage});
+//post image, it is necessary to do 
+
 //post method is an action that the frontend form listens for... this listener is listening for the Rawtex route
 app.post('/RawTex',(req, res)=>{
   //gets data from textbox in frontend
