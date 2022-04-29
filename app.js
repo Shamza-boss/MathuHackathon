@@ -5,6 +5,7 @@ var HCM = require('./CalculationEngine/HCM.js');
 var boilerplate = require('./CalculationEngine/Default.js')
 var storage = require('./CalculationEngine/ImageReader.js')
 var clarifyImage = require('./CalculationEngine/Clarifyimage.js')
+var  NormalizeInput = require('./CalculationEngine/NormalizeInput.js')
 var multer = require("multer");
 const Mathml2latex = require('mathml-to-latex');
 var mjAPI = require("mathjax-node");
@@ -48,6 +49,7 @@ app.post('/Pic', upload.single('image'),(req,res)=>{
       clarifyImage(filestring);
       Tesseract.recognize('OCR_Ready_Image.png','equ+eng', {logger: m => console.log(m)}).then(({data: {text}}) => {
               OCR_Text = JSON.stringify(text);
+              OCR_Text = NormalizeInput(OCR_Text)
               filter = HCM(OCR_Text.slice(1, -2));
               res.status(200).render('image.ejs', {result: filter})
       })
