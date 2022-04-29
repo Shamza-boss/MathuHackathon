@@ -51,7 +51,7 @@ function compareArray(nodes1,nodes2,order = false)
                     case 'FunctionNode':
                         return a.name < b.name ? -1 : 1;                    
                     default:
-                        console.log('Undefined type in sort');           
+                        //console.log('Undefined type in sort');           
                 }
                 //if we reach this something is broken
                 return 0;      
@@ -78,7 +78,7 @@ function compareArray(nodes1,nodes2,order = false)
                     case 'FunctionNode':
                         return a.name < b.name ? -1 : 1;                    
                     default:
-                        console.log('Undefined type in sort');           
+                        //console.log('Undefined type in sort');           
                 }
                 //if we reach this something is broken
                 return 0;
@@ -147,7 +147,7 @@ function compareArray(nodes1,nodes2,order = false)
                         
                     break;
                 default:
-                    console.log('Undefined node: ' + nodes1[i].toString());                     
+                    //console.log('Undefined node: ' + nodes1[i].toString());                     
             }
         }
 
@@ -173,7 +173,7 @@ function compareArray(nodes1,nodes2,order = false)
                 match.stringValueSearch = nodes1[i].name;                 
                 break;
             default:
-                console.log('Undefined node: ' + nodes1[i].toString());                     
+                //console.log('Undefined node: ' + nodes1[i].toString());                     
         }
 
 
@@ -196,7 +196,7 @@ function compareArray(nodes1,nodes2,order = false)
                 match.stringValueItem = nodes2[i].name;                 
                 break;
             default:
-                console.log('Undefined node: ' + nodes2[i].toString());                     
+                //console.log('Undefined node: ' + nodes2[i].toString());                     
         }
 
 
@@ -338,46 +338,119 @@ function toMathJs(str)
     return expression;
 }
 
-// create a custom function
-function Summation(variter,start,stop,expression) //sum(k, 0, n, (-1)^k*(x^(2*k+1))/(2*k+1)! )
-{
-    if((Math.abs(stop - start)) > 10000)
-    {
-        console.log('summation range too large!');
-    }
-
-    let res = 0;
-
-    for(let i = start;i<=stop;i++)
-    {
-        let expr = expression.replaceAll(expression,variter,i)
-        console.log(expr);
-        res += math.parse(expr).evaluate();
-    }
-    return res
-}
-
-// attach a transform function to the function addIt
-Summation.transform = function (variter,start,stop,expression) //sum(k, 0, n, (-1)^k*(x^(2*k+1))/(2*k+1)! )
-{
-    //console.log('input: a=' + a + ', b=' + b)
-    // we can manipulate input here before executing addIt
-  
-    const res = Summation(variter,start,stop,expression)
-  
-    console.log('result: ' + res)
-    // we can manipulate result here before returning
-  
-    return res;
-}
-
-
-
 function StringParse(search, item)
 {
-    //we can remove replace here?
-    let answer = wuzzy.ngram(search.replace(/ /g, ""), item.replace(/ /g, ""));
+    //search.replace(/ /g, ""), item.replace(/ /g, "")
+    let answer = wuzzy.ngram(search, item);
     return answer;
+}
+
+function TestMathJs(str1,str2)
+{   
+    let expressions1 = toMathJs(str1);
+    let expressions2 = toMathJs(str2);
+
+
+    let simplifiedNodeArr1 = treeToArray(expressions1.simplified);
+    let simplifiedNodeArr2 = treeToArray(expressions2.simplified);
+
+    let NodeArr1 = treeToArray(expressions1.original);
+    let NodeArr2 = treeToArray(expressions2.original);
+
+
+
+    SortedimplifiedNodeArr1 = simplifiedNodeArr1.sort((a, b)=> 
+    {
+        if (a.type === b.type)
+        {         
+            switch(a.type)
+            {
+                case 'OperatorNode':
+                    return a.op < b.op ? -1 : 1;                      
+                case 'ConstantNode':
+                    return a.value < b.value ? -1 : 1;                   
+                case 'SymbolNode':
+                    return a.name < b.name ? -1 : 1;                    
+                case 'FunctionNode':
+                    return a.name < b.name ? -1 : 1;                    
+                default:
+                    console.log('Undefined type in sort');           
+            }
+            //if we reach this something is broken
+            return 0;      
+        }
+        else 
+        {
+          return a.type < b.type ? -1 : 1;
+        }
+    });
+    SortedimplifiedNodeArr2 = simplifiedNodeArr2.sort((a, b)=> 
+    {
+        if (a.type === b.type)
+        {         
+            switch(a.type)
+            {
+                case 'OperatorNode':
+                    return a.op < b.op ? -1 : 1;                      
+                case 'ConstantNode':
+                    return a.value < b.value ? -1 : 1;                   
+                case 'SymbolNode':
+                    return a.name < b.name ? -1 : 1;                    
+                case 'FunctionNode':
+                    return a.name < b.name ? -1 : 1;                    
+                default:
+                    console.log('Undefined type in sort');           
+            }
+            //if we reach this something is broken
+            return 0;      
+        }
+        else 
+        {
+          return a.type < b.type ? -1 : 1;
+        }
+    });
+
+
+
+
+
+
+
+    console.log('\n\nOriginal:\n');
+
+    console.log('\nnode array 1:');
+    console.log(expressions1.original.toString())
+    for(let i = 0;i<NodeArr1.length;i++)
+        console.log(NodeArr1[i].type);
+
+    console.log('\nnode array 2:');
+    console.log(expressions2.original.toString())
+    for(let i = 0;i<NodeArr2.length;i++)
+        console.log(NodeArr2[i].type);
+
+
+
+
+    console.log('\n\nSimplified:\n');
+
+    console.log('\nnode array 1:');
+    console.log(expressions1.simplified.toString())
+    for(let i = 0;i<simplifiedNodeArr1.length;i++)
+        console.log(simplifiedNodeArr1[i].type);
+
+    console.log('\nnode array 2:');
+    console.log(expressions2.simplified.toString())
+    for(let i = 0;i<simplifiedNodeArr2.length;i++)
+        console.log(simplifiedNodeArr2[i].type);
+
+
+   
+
+    console.log("\nOriginal:\n")
+    console.log(compareArray(NodeArr1,NodeArr2));
+    console.log("\nSimplified:\n")
+    console.log(compareArray(simplifiedNodeArr1,simplifiedNodeArr2));
+
 }
 
 //hanno
@@ -386,8 +459,19 @@ function MathParse(search, item)
     let nodes_arr1 = search;
     let nodes_arr2 = item;
 
+    //console.log('search');
+    //console.log(search[0].toString());
+    //console.log('item');
+    //console.log(item[0].toString());
+
     //console.log('search: ',input.toString() /*, nodeArrayToStr(nodes_arr1)*/);
     //console.log('item: ',item.toString() /*, nodeArrayToStr(nodes_arr2)*/);
+
+
+    //let uplen = Math.max(nodes_arr1.length, nodes_arr2.length);
+
+    //let totalop = nodes_arr1.
+
 
     var matches = compareArray(nodes_arr1,nodes_arr2); 
     var Orderedmatches = compareArray(nodes_arr1,nodes_arr2,true); 
@@ -429,6 +513,7 @@ function MathParse(search, item)
         if(Orderedmatches[i].Type.Function)//on function match
             OrderedFunctionMatch++;
     }
+    
 
     TokenMatch = TokenMatch / len,                         ValueMatch = ValueMatch / len;
     OperatorMatch = OperatorMatch / len,                   FunctionMatch = FunctionMatch / len;
@@ -436,17 +521,18 @@ function MathParse(search, item)
     OrderedTokenMatch = OrderedTokenMatch / len,           OrderedValueMatch = OrderedValueMatch / len;
     OrderedOperatorMatch = OrderedOperatorMatch / len,     OrderedFunctionMatch = OrderedFunctionMatch / len;
 
-    // //previous:
-    // let Overall = 
-    // TokenMatch        * 0.49 + ValueMatch        * 0.21 +
-    // OrderedTokenMatch * 0.20 + OrderedValueMatch * 0.10;
+    
+     let Overall = 
+     (TokenMatch        * 0.30 + ValueMatch        * 0.40 +
+     OrderedTokenMatch * 0.20 + OrderedValueMatch * 0.10) * 0.5 + OrderedOperatorMatch * 0.5;
 
-    let Overall =
-        TokenMatch           * 0.05 + ValueMatch           * 0.15 + //20%
-        OrderedTokenMatch    * 0.02 + OrderedValueMatch    * 0.08 + //10%
 
-        OperatorMatch        * 0.20 + FunctionMatch        * 0.20 + //40%
-        OrderedOperatorMatch * 0.15 + OrderedFunctionMatch * 0.15;  //30%
+    // let Overall =
+    //     TokenMatch           * 0.05 + ValueMatch           * 0.15 + //20%
+    //     OrderedTokenMatch    * 0.02 + OrderedValueMatch    * 0.08 + //10%
+
+    //     OperatorMatch        * 0.20 + FunctionMatch        * 0.20 + //40%
+    //     OrderedOperatorMatch * 0.15 + OrderedFunctionMatch * 0.15;  //30%
 
    
 {
@@ -508,7 +594,7 @@ function MathParse(search, item)
         ConfidenceValues:ConfidenceValues
     }
 
-    
+   // console.log(result.ConfidenceValues.Overall);
     return result;
 }
 
@@ -521,11 +607,9 @@ function round(num, decimalPlaces = 0) {
 const DBLen = DataWarehouse.length;
 const NormalizedDB = new Array(DBLen), AsciiDB = new Array(DBLen), MathjsDB = new Array(DBLen);
 
-//let MathjsData = {expressions}
-
 var startTime = performance.now();
 
-for(let i = 0;i < DBLen;i++)
+for(let i = 0; i < DBLen;i++)
 {
     NormalizedDB[i] = Normalize(DataWarehouse[i].Functions);
     AsciiDB[i] = toASCII(DataWarehouse[i].Functions);
@@ -536,17 +620,17 @@ for(let i = 0;i < DBLen;i++)
    
     if(expressions != null)
     {
-        //console.log(expressions);
+        //console.log(expressions.simplified.toString());
 
         let simplifiedNodeArr = treeToArray(expressions.simplified);
-        MathjsDB[i] = {expressions,simplifiedNodeArr};
+        let OriginalNodeArr = treeToArray(expressions.original);
+
+        MathjsDB[i] = {expressions,OriginalNodeArr,simplifiedNodeArr};
     }
     else MathjsDB[i] = null;
 }
 var endTime = performance.now();
 console.log('Init Time: '+ (endTime - startTime) + ' milliseconds');
-
-
 
 
 //Both methods
@@ -558,67 +642,54 @@ var Engine = (search) =>
     let AsciiSearch = toASCII(search);
 
     let searchExpressions = toMathJs(AsciiSearch);
-    let simplifiedNodeArr;
+    let OriginalNodeArr,simplifiedNodeArr;
 
 
-    
 
     if(searchExpressions != null)
     {
+        OriginalNodeArr = treeToArray(searchExpressions.original);
         simplifiedNodeArr = treeToArray(searchExpressions.simplified);
         //console.log('search:'+ searchExpressions.original);
     }
 
-    
 
     var filter = new Array(DBLen);
 
     
     for(let i = 0; i < DBLen; i++)
     {      
-       let item = DataWarehouse[i].Functions;
-
-
-       //console.log('search: '+search);
-       //console.log('item: '+item);
-
-       //console.log(MathParse(search,item));
-       //console.log(StringParse(search,item));
-
-
-       //use a third method that does a comparison based only on the string length?
-
-       //math = hanno, string = christiaan
+        let item = DataWarehouse[i].Functions;
+ 
         let mathConfidence = 0, stringConfidence = 0;
       
         //to store results from Hanno method
-        let mathResults = {},MathMlExpr = {};
+        let  mathResultsOriginal = {}, mathResultsSimplified = {}, MathJSExpr = {};
 
-        let CanParse = (searchExpressions != null && MathjsDB[i] != null);
+        let CanParse = (searchExpressions != null && MathjsDB[i] != null && Math.abs(searchExpressions.original.toString().length - MathjsDB[i].expressions.original.toString()) < 6);
        
-        
-
-          
-        //mathResults = MathParse(search,item);
-        
         //use this if we can parse the function
-        if(CanParse/*mathResults != null || mathResults.Token != undefined || mathResults != "error"*/)
+        if(CanParse)
         {
-            //mathParse expects two node arrays to compare
-            //console.log('hello')
-            //console.log(MathjsDB[i].expressions.simplified);
-
             MathJSExpr = 
             {
-               Search:searchExpressions.simplified.toString(),
-               Item:MathjsDB[i].expressions.simplified.toString()
+                SearchOriginal:searchExpressions.original.toString(),
+                ItemOriginal:MathjsDB[i].expressions.original.toString(),
+
+                SearchSimplified:searchExpressions.simplified.toString(),
+                ItemSimplified:MathjsDB[i].expressions.simplified.toString()
             }
+            //console.log(MathJSExpr);
 
+            mathResultsSimplified = MathParse(simplifiedNodeArr,MathjsDB[i].simplifiedNodeArr);
+            mathResultsOriginal = MathParse(OriginalNodeArr,MathjsDB[i].OriginalNodeArr);
 
+            //console.log(mathResultsOriginal)
 
-            mathResults = MathParse(simplifiedNodeArr,MathjsDB[i].simplifiedNodeArr);
+            //console.log('simplified:'+mathResultsSimplified.ConfidenceValues.Overall);
+           // console.log('orig:'+mathResultsOriginal.ConfidenceValues.overall);
 
-            mathConfidence = mathResults.ConfidenceValues.Overall;
+            mathConfidence = Math.max(mathResultsSimplified.ConfidenceValues.Overall/*, mathResultsOriginal.ConfidenceValues.overall*/);
 
             //console.log(mathResults.ExpressionBeforeSimplify.SearchPlain);
             //console.log(mathResults.ExpressionBeforeSimplify.ItemPlain);
@@ -626,8 +697,7 @@ var Engine = (search) =>
             //we use both hanno's string simplify methods and christian's and see wich one gets the best match
             stringConfidence = Math.max
             (            
-                //StringParse(mathResults.ExpressionBeforeSimplify.SearchPlain, mathResults.ExpressionBeforeSimplify.ItemPlain),
-                //StringParse(mathResults.ExpressionAfterSimplify.SearchPlain, mathResults.ExpressionAfterSimplify.ItemPlain),
+                //StringParse(MathJSExpr.SearchOriginal, MathJSExpr.ItemOriginal),           
                 StringParse(search, item),
                 StringParse(normalizedSearch, NormalizedDB[i])
             );       
@@ -643,33 +713,43 @@ var Engine = (search) =>
                 StringParse(normalizedSearch, NormalizedDB[i])
             );          
         }
-
-
-       
-
+ 
         let expressions = 
         {
             SearchMathMl:convertM(search),
             ItemMathMl:convertM(item)
         }
 
-
-
         let overall = 0;
 
-        if(mathConfidence == 0)
+        if(search === item)
+            overall = 1;
+        else if(mathConfidence == 0)
             overall = stringConfidence;
-        else        
-        {
-            overall = mathConfidence * 0.3 + stringConfidence * 0.7;
-        }
+        else               
+            overall = mathConfidence * 0.4 + stringConfidence * 0.6;
         
+        if(MathJSExpr != null)
+        {
+            if(MathJSExpr.SearchOriginal === MathJSExpr.ItemOriginal)
+                overall = 1;
+            else if(MathJSExpr.SearchSimplified === MathJSExpr.ItemSimplified)
+                overall = 0.9;
+        }
+        if(stringConfidence === 1)
+            overall = 1;
 
+        
         //if we could not parse the expression in mathml, mathResults will be null but Overal confidence will still work
         let result = 
         {
             //from mathjs, can be null
-            mathResults: mathResults,
+            //mathResults: mathResults,
+
+            mathResultsSimplified: mathResultsSimplified,
+            mathResultsOriginal: mathResultsOriginal,
+
+
             //from database and user
             expressions:expressions,
             MathJSExpr:MathJSExpr,
@@ -678,11 +758,10 @@ var Engine = (search) =>
             mathConfidence:mathConfidence,
 
 
-            OverallConfidence: round((overall)*100.0, 3)
+            OverallConfidence: round(overall*100.0, 3)
         }
 
-        filter[i] = result;
-     
+        filter[i] = result; 
     }
     
 
@@ -696,7 +775,6 @@ var Engine = (search) =>
         //overal
         return a.OverallConfidence > b.OverallConfidence ? -1 : 1
     });
-
 
     endTime = performance.now();
     console.log('Search Time: '+ (endTime - startTime) + ' milliseconds');
@@ -712,8 +790,15 @@ var Engine = (search) =>
 //console.log(convertM('6d -9r +2t^{5}d -3t^{5}r'))
 //console.log(Engine('6d -9r +2t^{5}d -3t^{5}r ')[0].expressions.SearchMathMl);
 var q= '\\frac{ y-3}{3}';
+
 let eng = Engine(q.slice(1));
 
 for(let i = 0; i < 3; i++)
-    console.log(eng[i]);
+  console.log(eng[i]);
+
+
+
+//TestMathJs('y-3/3','2/3');
+
+
 module.exports = Engine;
